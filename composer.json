@@ -1,0 +1,13 @@
+{
+    "name": "nozavroni/collect",
+    "description": "A very simple collection library for PHP",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Luke Visinoni",
+            "email": "luke.visinoni@gmail.com"
+        }
+    ],
+    "require": {}
+}
