@@ -9,5 +9,32 @@
             "email": "luke.visinoni@gmail.com"
         }
     ],
-    "require": {}
+    "support": {
+        "issues": "https://github.com/nozavroni/collect/issues"
+    },
+    "require": {
+        "php": "^5.6 || ^7.0"
+    },
+    "require-dev": {
+        "symfony/var-dumper": "^3.1",
+        "fzaninotto/Faker": "dev-master",
+        "phpunit/phpunit": "^5.7",
+        "phpdocumentor/reflection-docblock": "^3.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Noz\\": "src/"
+        },
+        "files": [
+            "src/functions.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Noz\\Tests\\": "tests/Tests"
+        },
+        "files": [
+            "tests/functions.php"
+        ]
+    }
 }
