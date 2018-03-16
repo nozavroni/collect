@@ -1,0 +1,4 @@
+<?php
+/**
+ * Useful functions
+ */
