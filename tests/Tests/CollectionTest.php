@@ -17,6 +17,22 @@ class CollectionTest extends TestCase
         $this->assertEquals([], $col->toArray());
     }
 
+    public function testFactoryReturnsNewEmptyCollection()
+    {
+        $col = Collection::factory();
+        $this->assertInstanceOf(Collection::class, $col);
+        $this->assertTrue($col->isEmpty());
+    }
+
+    public function testFactoryReturnsNewCollectionWithItemsPassedToIt()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = Collection::factory($arr);
+        $this->assertInstanceOf(Collection::class, $col);
+        $this->assertFalse($col->isEmpty());
+        $this->assertSame($arr, $col->toArray());
+    }
+
     public function testToArrayReturnsItemsAsArray()
     {
         $arr = $this->getFixture('0index');
@@ -136,6 +152,34 @@ class CollectionTest extends TestCase
 
         $this->assertFalse($col->contains('fourth'));
         $this->assertTrue($col->contains('first'));
+    }
+
+    public function testPullRemovesItemAndReturnsIt()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection($arr);
+
+        $this->assertTrue($col->has('2nd'));
+        $this->assertEquals('second', $col->pull('2nd'));
+        $this->assertFalse($col->has('2nd'));
+        $this->assertNull($col->pull('2nd'));
+    }
+
+    public function testJoinReturnsDelimitedString()
+    {
+        $arr = $this->getFixture("assoc");
+        $col = new Collection($arr);
+
+        $this->assertEquals("first-second-third", $col->join('-'));
+    }
+
+    public function testIsEmptyReturnsTrueIfEmpty()
+    {
+        $col = new Collection();
+
+        $this->assertTrue($col->isEmpty());
+        $col->add('foo');
+        $this->assertFalse($col->isEmpty());
     }
 
     /** ++++                        ++++ **/

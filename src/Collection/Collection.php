@@ -20,10 +20,23 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      *
      * @param array $items
      */
-    public function __construct($items = [])
+    public function __construct(array $items = [])
     {
         $this->items = $items;
         $this->rewind();
+    }
+
+    /**
+     * Generate a collection from an array of items.
+     * I created this method so that it's possible to extend a collection more easily.
+     *
+     * @param array $items
+     *
+     * @return Collection
+     */
+    public static function factory(array $items = [])
+    {
+        return new Collection($items);
     }
 
     /**
@@ -120,9 +133,54 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
         return $this;
     }
 
+    /**
+     * Determine if collection contains given value
+     *
+     * @param mixed $val
+     *
+     * @return bool
+     */
     public function contains($val)
     {
         return in_array($val, $this->items, true);
+    }
+
+    /**
+     * Fetch item from collection by key and remove it from collection
+     *
+     * @param mixed $key
+     *
+     * @return mixed
+     */
+    public function pull($key)
+    {
+        if ($this->has($key)) {
+            $value = $this->get($key);
+            $this->delete($key);
+            return $value;
+        }
+    }
+
+    /**
+     * Join collection items using a delimiter
+     *
+     * @param string $delim
+     *
+     * @return string
+     */
+    public function join($delim = '')
+    {
+        return implode($delim, $this->items);
+    }
+
+    /**
+     * Determine if collection has any items
+     *
+     * @return bool
+     */
+    public function isEmpty()
+    {
+        return $this->count() == 0;
     }
 
     /** ++++                  ++++ **/
