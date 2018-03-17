@@ -187,7 +187,21 @@ class CollectionTest extends TestCase
         $arr = $this->getFixture('assoc');
         $col = new Collection($arr);
 
+        $this->assertSame($arr, $col->toArray());
+        $values = $col->values();
+        $this->assertInstanceOf(Collection::class, $values);
+        $this->assertSame(array_values($arr), $values->toArray());
+    }
 
+    public function testKeysReturnsCollectionOfKeys()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection($arr);
+
+        $this->assertSame($arr, $col->toArray());
+        $keys = $col->keys();
+        $this->assertInstanceOf(Collection::class, $keys);
+        $this->assertSame(array_keys($arr), $keys->toArray());
     }
 
     /** ++++                        ++++ **/

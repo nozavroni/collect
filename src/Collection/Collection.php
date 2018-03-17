@@ -183,7 +183,25 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
         return $this->count() == 0;
     }
 
+    /**
+     * Get a collection of only this collection's values (without its keys)
+     *
+     * @return Collection
+     */
+    public function values()
+    {
+        return static::factory(array_values($this->items));
+    }
 
+    /**
+     * Get a collection of only this collection's keys
+     *
+     * @return Collection
+     */
+    public function keys()
+    {
+        return static::factory(array_keys($this->items));
+    }
 
     /** ++++                  ++++ **/
     /** ++ Interface Compliance ++ **/
