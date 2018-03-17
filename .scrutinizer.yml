@@ -12,7 +12,7 @@ filter:
     paths: [src/*]
     excluded_paths: [vendor/*]
 before_commands:
-    - 'composer remove phpunit/phpunit && composer require --dev phpunit/phpunit:^5.7 --update-with-dependencies'
+    - 'composer install --prefer-source'
 tools:
     external_code_coverage:
         timeout: 300
