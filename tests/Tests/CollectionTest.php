@@ -182,6 +182,14 @@ class CollectionTest extends TestCase
         $this->assertFalse($col->isEmpty());
     }
 
+    public function testValuesReturnsCollectionOfValuesWithoutKeys()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection($arr);
+
+
+    }
+
     /** ++++                        ++++ **/
     /** ++ Interface Compliance Tests ++ **/
     /** ++++                        ++++ **/

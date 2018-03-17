@@ -183,6 +183,8 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
         return $this->count() == 0;
     }
 
+
+
     /** ++++                  ++++ **/
     /** ++ Interface Compliance ++ **/
     /** ++++                  ++++ **/
