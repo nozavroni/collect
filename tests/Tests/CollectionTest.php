@@ -62,6 +62,67 @@ class CollectionTest extends TestCase
         $this->assertTrue($col->has('emptyval'));
     }
 
+    public function testHasItemAtReturnsTrueIfCollectionHasItemAtGivenPosition()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection($arr);
+
+        $this->assertFalse($col->hasValueAt(10));
+        $this->assertTrue($col->hasValueAt(1));
+        $this->assertTrue($col->hasValueAt(2));
+        $this->assertTrue($col->hasValueAt(3));
+        $this->assertFalse($col->hasValueAt(4));
+    }
+
+    public function testHasItemAtReturnsTrueIfCollectionHasItemAtGivenNegativePosition()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection($arr);
+
+        $this->assertFalse($col->hasValueAt(-10));
+        $this->assertTrue($col->hasValueAt(-1));
+        $this->assertTrue($col->hasValueAt(-2));
+        $this->assertTrue($col->hasValueAt(-3));
+        $this->assertFalse($col->hasValueAt(-4));
+    }
+
+    public function testGetKeyAtReturnsKeyAtGivenPosition()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection($arr);
+
+        $this->assertEquals('1st', $col->getKeyAt(1));
+        $this->assertEquals('2nd', $col->getKeyAt(2));
+        $this->assertEquals('3rd', $col->getKeyAt(3));
+        $this->assertEquals('1st', $col->getKeyAt(-3));
+        $this->assertEquals('2nd', $col->getKeyAt(-2));
+        $this->assertEquals('3rd', $col->getKeyAt(-1));
+    }
+
+    public function testGetValueAtReturnsValueAtGivenPosition()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection($arr);
+
+        $this->assertEquals('first', $col->getValueAt(1));
+        $this->assertEquals('second', $col->getValueAt(2));
+        $this->assertEquals('third', $col->getValueAt(3));
+        $this->assertEquals('first', $col->getValueAt(-3));
+        $this->assertEquals('second', $col->getValueAt(-2));
+        $this->assertEquals('third', $col->getValueAt(-1));
+    }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testGetKeyAtThrowsExceptionIfPositionDoesntExist()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection($arr);
+
+        $col->getKeyAt(4);
+    }
+
     public function testGetReturnsValueAssociatedWithGivenKey()
     {
         $arr = $this->getFixture('assoc');

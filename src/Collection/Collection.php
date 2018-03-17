@@ -62,6 +62,76 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
+     * Does collection have item at position?
+     *
+     * Determine if collection has an item at a particular position (indexed from one).
+     * Position can be positive and start from the beginning or it can be negative and
+     * start from the end.
+     *
+     * @param int $position
+     *
+     * @return bool
+     */
+    public function hasValueAt($position)
+    {
+        try {
+            $this->getKeyAt($position);
+            return true;
+        } catch (RuntimeException $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Get key at given position
+     *
+     * Returns the key at the given position, starting from one. Position can be positive (start from beginning) or
+     * negative (start from the end).
+     *
+     * If the position does not exist, a RuntimeException is thrown.
+     *
+     * @param int $position
+     *
+     * @return string
+     *
+     * @throws RuntimeException
+     */
+    public function getKeyAt($position)
+    {
+        $collection = $this;
+        if ($position < 0) {
+            $collection = $this->reverse();
+        }
+        $i = 1;
+        foreach ($collection as $key => $val) {
+            if (abs($position) == $i) {
+                return $key;
+            }
+            $i++;
+        }
+        throw new RuntimeException("No key at position {$position}");
+    }
+
+    /**
+     * Get value at given position
+     *
+     * Returns the value at the given position, starting from one. Position can be positive (start from beginning) or
+     * negative (start from the end).
+     *
+     * If the position does not exist, a RuntimeException is thrown.
+     *
+     * @param int $position
+     *
+     * @return mixed
+     *
+     * @throws RuntimeException
+     */
+    public function getValueAt($position)
+    {
+        return $this->get($this->getKeyAt($position));
+    }
+
+    /**
      * Get item by key, with an optional default return value
      *
      * @param mixed $key
@@ -201,6 +271,76 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     public function keys()
     {
         return static::factory(array_keys($this->items));
+    }
+
+    /**
+     * Get a collection with order reversed
+     *
+     * @return Collection
+     */
+    public function reverse()
+    {
+        return static::factory(array_reverse($this->items));
+    }
+
+    /**
+     * Get a collection with keys and values flipped
+     *
+     * @return Collection
+     */
+    public function flip()
+    {
+
+    }
+
+    /**
+     * Shuffle the order of this collection's values
+     *
+     * @return Collection
+     */
+    public function shuffle()
+    {
+
+    }
+
+    /**
+     * Get a new collection with randomly ordered values
+     *
+     * @return Collection
+     */
+    public function random()
+    {
+
+    }
+
+    /**
+     * Sort the collection
+     *
+     * @return Collection
+     */
+    public function sort()
+    {
+
+    }
+
+    /**
+     * Get a new collection with only distinct values
+     *
+     * @return Collection
+     */
+    public function distict()
+    {
+
+    }
+
+    /**
+     * Remove all duplicate values from collection in-place
+     *
+     * @return Collection
+     */
+    public function deduplicate()
+    {
+
     }
 
     /** ++++                  ++++ **/
