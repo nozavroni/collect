@@ -22,6 +22,7 @@ install:
 
 before_script:
     - composer install
+    - composer remove phpunit/phpunit && require --dev phpunit/phpunit:^5.7 --update-with-dependencies
 
 script: vendor/bin/phpunit
 
