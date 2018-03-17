@@ -265,4 +265,11 @@ class CollectionTest extends TestCase
 
         $this->assertEquals(count($arr), $col->count());
     }
+
+    public function testJsonSerializeReturnsCollectionAsArray()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection($arr);
+        $this->assertEquals($arr, $col->jsonSerialize());
+    }
 }
