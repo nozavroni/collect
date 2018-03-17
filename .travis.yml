@@ -23,11 +23,8 @@ install:
 
 before_script:
     - composer install
-    - ./travis/before_script.sh
 
-script: ./travis/script.sh
-
-after_script: ./travis/after_script.sh
+script: vendor/bin/phpunit
 
 notifications:
   email:
