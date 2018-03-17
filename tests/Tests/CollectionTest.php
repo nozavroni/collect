@@ -2,6 +2,7 @@
 namespace Noz\Tests;
 
 use Noz\Collection\Collection;
+use RuntimeException;
 
 /**
  * Collection Tests
@@ -126,5 +127,81 @@ class CollectionTest extends TestCase
         $cleared = $col->toArray();
         $this->assertInternalType('array', $cleared);
         $this->assertEmpty($cleared);
+    }
+
+    /** ++++                        ++++ **/
+    /** ++ Interface Compliance Tests ++ **/
+    /** ++++                        ++++ **/
+
+    public function testArrayAccessInterfaceMethods()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection($arr);
+
+        // offset exists
+        $this->assertTrue(isset($col['1st']));
+        $this->assertFalse(isset($col['21st']));
+        $this->assertArrayHasKey('1st', $col);
+        $this->assertArrayNotHasKey('21st', $col);
+
+        // get offset
+        $this->assertEquals($arr['1st'], $col['1st']);
+
+        // set offset
+        $this->assertFalse(isset($col['test']));
+        $col['test'] = 'value';
+        $this->assertTrue(isset($col['test']));
+        $this->assertEquals('value', $col['test']);
+        $this->assertFalse(isset($col[0]));
+        $col[] = 'empty key';
+        $this->assertTrue(isset($col[0]));
+        $this->assertEquals('empty key', $col[0]);
+
+        // offset unset
+        $this->assertArrayHasKey('test', $col);
+        unset($col['test']);
+        $this->assertArrayNotHasKey('test', $col);
+    }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testArrayAccessGetOffsetThrowsExceptionIfInvalidKey()
+    {
+        $col = new Collection();
+        $foo = $col['unknown'];
+    }
+
+    public function testIteratorInterfaceMethods()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection($arr);
+
+        // test interface methods individually
+        $this->assertEquals('first', $col->current());
+        $this->assertEquals('1st', $col->key());
+        $this->assertEquals('second', $col->next());
+        $this->assertNull($col->rewind());
+        $this->assertEquals('first', $col->current());
+        $col->next();
+        $col->next();
+        $this->assertTrue($col->valid());
+        $col->next();
+        $this->assertFalse($col->valid());
+
+        // test that foreach hits each item in collection
+        $count = 0;
+        foreach ($col as $key => $val) {
+            $count++;
+        }
+        $this->assertEquals(3, $count);
+    }
+
+    public function testCountInterfaceMethodReturnsTotalItems()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection($arr);
+
+        $this->assertEquals(count($arr), $col->count());
     }
 }

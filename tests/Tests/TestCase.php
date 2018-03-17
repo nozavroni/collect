@@ -21,9 +21,9 @@ class TestCase extends PHPUnit_Framework_TestCase
         $faker = Factory::create();
         $faker->seed(5242017); // seed with my son's bday to keep data consistent
 
-        $this->fixtures['0index']  = ['zero', 'one', 'two', 'three'];
-        $this->fixtures['array']  = ['first', 'second', 'third'];
-        $this->fixtures['assoc']  = ['1st' => 'first', '2nd' => 'second', '3rd' => 'third'];
+        $this->fixtures['0index'] = ['zero', 'one', 'two', 'three'];
+        $this->fixtures['array'] = ['first', 'second', 'third'];
+        $this->fixtures['assoc'] = ['1st' => 'first', '2nd' => 'second', '3rd' => 'third'];
     }
 
     public function tearDown()
