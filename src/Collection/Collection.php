@@ -120,6 +120,11 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
         return $this;
     }
 
+    public function contains($val)
+    {
+        return in_array($val, $this->items, true);
+    }
+
     /** ++++                  ++++ **/
     /** ++ Interface Compliance ++ **/
     /** ++++                  ++++ **/

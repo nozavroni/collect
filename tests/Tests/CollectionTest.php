@@ -129,6 +129,15 @@ class CollectionTest extends TestCase
         $this->assertEmpty($cleared);
     }
 
+    public function testContainsReturnsTrueIfCollectionContainsValue()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection($arr);
+
+        $this->assertFalse($col->contains('fourth'));
+        $this->assertTrue($col->contains('first'));
+    }
+
     /** ++++                        ++++ **/
     /** ++ Interface Compliance Tests ++ **/
     /** ++++                        ++++ **/
