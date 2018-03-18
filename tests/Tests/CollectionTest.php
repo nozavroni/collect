@@ -225,6 +225,56 @@ class CollectionTest extends TestCase
         }, 'init'), 'Initial value passed in should be the first value of $accum');
     }
 
+    public function testMergeMergesArrayIntoNewCollection()
+    {
+        $arr1 = $this->getFixture('numwords');
+        $arr2 = ['two' => 'two', 'three' => 3, 'four' => 'four', 4 => 'for'];
+
+        $col = new Collection($arr1);
+
+        $merged = $col->merge($arr2);
+        $this->assertEquals([
+            0 => 'zero',
+            1 => 'one',
+            'two' => 'two',
+            3 => 'three',
+            'four' => 'four',
+            'five' => 5,
+            4 => 'for',
+            'three' => 3
+        ], $merged->toArray());
+    }
+
+    public function testMergeMergesTraversableIntoNewCollection()
+    {
+        $arr1 = $this->getFixture('numwords');
+        $arr2 = ['two' => 'two', 'three' => 3, 'four' => 'four', 4 => 'for'];
+
+        $col = new Collection($arr1);
+        $col2 = new Collection($arr2);
+
+        $merged = $col->merge($col2);
+        $this->assertEquals([
+            0 => 'zero',
+            1 => 'one',
+            'two' => 'two',
+            3 => 'three',
+            'four' => 'four',
+            'five' => 5,
+            4 => 'for',
+            'three' => 3
+        ], $merged->toArray());
+    }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testMergeThrowsExceptionIfPassedInvalidInput()
+    {
+        $col = new Collection();
+        $col->merge(false);
+    }
+
     /**
      * @expectedException RuntimeException
      */

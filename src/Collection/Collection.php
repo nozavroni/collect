@@ -6,6 +6,7 @@ use JsonSerializable;
 use Iterator;
 use ArrayAccess;
 use RuntimeException;
+use Traversable;
 
 /**
  * Nozavroni Collection
@@ -380,7 +381,18 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
         return $collection;
     }
 
-    public function fold($callback, $initial = null)
+    /**
+     * Fold collection into a single value
+     *
+     * Loop through collection calling a callback function and passing the result to the next iteration, eventually
+     * returning a single value.
+     *
+     * @param callable $callback
+     * @param mixed $initial
+     *
+     * @return null
+     */
+    public function fold(callable $callback, $initial = null)
     {
         $index = 0;
         $folded = $initial;
@@ -389,6 +401,28 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
         }
         return $folded;
     }
+
+    /**
+     * Return a merge of this collection and $items
+     *
+     * @param array|Traversable $items
+     *
+     * @return Collection
+     */
+    public function merge($items)
+    {
+        if (!is_array($items) && !($items instanceof Traversable)) {
+            throw new RuntimeException("Invalid input type for merge, must be array or Traversable");
+        }
+
+        $collection = clone $this;
+        foreach ($items as $key => $val) {
+            $collection->set($key, $val);
+        }
+        return $collection;
+    }
+
+
 
     /** ++++                  ++++ **/
     /** ++ Interface Compliance ++ **/
