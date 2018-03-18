@@ -175,7 +175,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      */
     public function set($key, $value, $overwrite = true)
     {
-        if ($overwrite) {
+        if ($overwrite || !$this->has($key)) {
             $this->items[$key] = $value;
         }
 

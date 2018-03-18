@@ -347,6 +347,8 @@ class CollectionTest extends TestCase
         $this->assertEquals('first', $col->get('1st'), "Collection item's value should not have changed because overwrite param was set to false");
         $col->set('1st', 'worst', true);
         $this->assertEquals('worst', $col->get('1st'), "Collection item's value should have changed because overwrite param was set to true");
+        $col->set('totallynew', 'newval', false);
+        $this->assertEquals('newval', $col->get('totallynew'), "Collection should add a new key even if overwrite is set to false");
     }
 
     public function testCollectionKeysMustBeScalar()
