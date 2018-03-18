@@ -337,6 +337,18 @@ class CollectionTest extends TestCase
         $this->assertEquals('nullkey', $col->get(null), "Ensure null can be used as a key");
     }
 
+    public function testSetShouldOptionallyNotOverwriteExistingKeys()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection($arr);
+
+        $this->assertEquals('first', $col->get('1st'));
+        $this->assertSame($col, $col->set('1st', 'worst', false));
+        $this->assertEquals('first', $col->get('1st'), "Collection item's value should not have changed because overwrite param was set to false");
+        $col->set('1st', 'worst', true);
+        $this->assertEquals('worst', $col->get('1st'), "Collection item's value should have changed because overwrite param was set to true");
+    }
+
     public function testCollectionKeysMustBeScalar()
     {
         // I'm thinking keys should be required to be scalars. I could create a specialized collection

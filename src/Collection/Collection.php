@@ -169,12 +169,15 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      *
      * @param mixed $key
      * @param mixed $value
+     * @param bool  $overwrite If false, do not overwrite existing key
      *
      * @return $this
      */
-    public function set($key, $value)
+    public function set($key, $value, $overwrite = true)
     {
-        $this->items[$key] = $value;
+        if ($overwrite) {
+            $this->items[$key] = $value;
+        }
 
         return $this;
     }
@@ -414,7 +417,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     public function merge($items)
     {
         if (!is_traversable($items)) {
-            throw new RuntimeException("Invalid input type for merge, must be array or Traversable");
+            throw new RuntimeException("Invalid input type for " . __METHOD__ . ", must be array or Traversable");
         }
 
         $collection = clone $this;
@@ -429,7 +432,15 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      */
     public function union($items)
     {
+        if (!is_traversable($items)) {
+            throw new RuntimeException("Invalid input type for " . __METHOD__ . ", must be array or Traversable");
+        }
 
+        $collection = clone $this;
+        foreach ($items as $key => $val) {
+            $collection->set($key, $val);
+        }
+        return $collection;
     }
 
     /** ++++                  ++++ **/
