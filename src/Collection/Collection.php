@@ -104,10 +104,9 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
         }
         $i = 1;
         foreach ($collection as $key => $val) {
-            if (abs($position) == $i) {
+            if (abs($position) == $i++) {
                 return $key;
             }
-            $i++;
         }
         throw new RuntimeException("No key at position {$position}");
     }
@@ -290,7 +289,11 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      */
     public function flip()
     {
-
+        $collection = static::factory();
+        foreach ($this as $key => $val) {
+            $collection->set($val, $key);
+        }
+        return $collection;
     }
 
     /**
@@ -300,25 +303,28 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      */
     public function shuffle()
     {
-
+        shuffle($this->items);
+        return $this;
     }
 
     /**
-     * Get a new collection with randomly ordered values
+     * Get a random value from the collection
      *
-     * @return Collection
+     * @return mixed
      */
     public function random()
     {
-
+        return $this->getValueAt(rand(1, $this->count()));
     }
 
     /**
      * Sort the collection
      *
+     * @param mixed $algo
+     *
      * @return Collection
      */
-    public function sort()
+    public function sort($algo = null)
     {
 
     }

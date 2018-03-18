@@ -112,6 +112,40 @@ class CollectionTest extends TestCase
         $this->assertEquals('third', $col->getValueAt(-1));
     }
 
+    public function testFlipReturnsNewCollectionWithKeysAndValuesFlipped()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection($arr);
+
+        $this->assertSame(array_flip($arr), $col->flip()->toArray());
+    }
+
+    /**
+     * Testing for randomness doesnt really make sense so I just test that it returns itself.
+     * I'm using PHP's internal "shuffle" within the method so it doesn't really need testing anyway.
+     */
+    public function testShuffleReturnsSelf()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection($arr);
+
+        $this->assertSame($col, $col->shuffle());
+    }
+
+    /**
+     * Not really sure how to test this method...
+     */
+    public function testRandomReturnsARandomItem()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection($arr);
+
+        for ($i=0;$i<100;$i++) {
+            $item = $col->random();
+            $this->assertTrue(in_array($item, $arr));
+        }
+    }
+
     /**
      * @expectedException RuntimeException
      */
