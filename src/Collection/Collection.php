@@ -8,6 +8,8 @@ use ArrayAccess;
 use RuntimeException;
 use Traversable;
 
+use function Noz\is_traversable;
+
 /**
  * Nozavroni Collection
  */
@@ -411,7 +413,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      */
     public function merge($items)
     {
-        if (!is_array($items) && !($items instanceof Traversable)) {
+        if (!is_traversable($items)) {
             throw new RuntimeException("Invalid input type for merge, must be array or Traversable");
         }
 
@@ -422,7 +424,13 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
         return $collection;
     }
 
+    /**
+     * @param $items
+     */
+    public function union($items)
+    {
 
+    }
 
     /** ++++                  ++++ **/
     /** ++ Interface Compliance ++ **/

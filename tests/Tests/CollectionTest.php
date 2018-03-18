@@ -275,6 +275,8 @@ class CollectionTest extends TestCase
         $col->merge(false);
     }
 
+    // public function test
+
     /**
      * @expectedException RuntimeException
      */
