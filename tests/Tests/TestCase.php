@@ -30,6 +30,15 @@ class TestCase extends PHPUnit_Framework_TestCase
             'secondthree' => 3,
             'thirdzero' => 0
         ];
+        $this->fixtures['numwords'] = [
+            0 => 'zero',
+            1 => 'one',
+            'two' => 2,
+            3 => 'three',
+            'four' => 4,
+            'five' => 5,
+            4 => 'four'
+        ];
     }
 
     public function tearDown()

@@ -357,6 +357,39 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
         return $this;
     }
 
+    /**
+     * Return a new collection with only filtered keys/values
+     *
+     * The callback accepts value, key, index and should return true if the item should be added to the returned
+     * collection
+     *
+     * @param callable $callback
+     *
+     * @return Collection
+     */
+    public function filter(callable $callback)
+    {
+        $collection = static::factory();
+        $index = 0;
+        foreach ($this as $key => $value) {
+            if ($callback($value, $key, $index++)) {
+                $collection->set($key, $value);
+            }
+        }
+
+        return $collection;
+    }
+
+    public function fold($callback, $initial = null)
+    {
+        $index = 0;
+        $folded = $initial;
+        foreach ($this as $key => $val) {
+            $folded = $callback($folded, $val, $key, $index++);
+        }
+        return $folded;
+    }
+
     /** ++++                  ++++ **/
     /** ++ Interface Compliance ++ **/
     /** ++++                  ++++ **/

@@ -173,6 +173,58 @@ class CollectionTest extends TestCase
         ], $col->toArray());
     }
 
+    public function testFilterKeepsOnlyItemsPassingTest()
+    {
+        $arr = $this->getFixture('numwords');
+        $col = new Collection($arr);
+
+        $filtered = $col->filter(function($val, $key) {
+            return is_int($val);
+        });
+        $this->assertEquals([
+            'two' => 2,
+            'four' => 4,
+            'five' => 5
+        ], $filtered->toArray());
+
+        $filtered = $col->filter(function($val, $key) {
+            return is_int($key);
+        });
+        $this->assertEquals([
+            0 => 'zero',
+            1 => 'one',
+            3 => 'three',
+            4 => 'four'
+        ], $filtered->toArray());
+
+        $filtered = $col->filter(function($val, $key, $i) {
+            return $i % 2 == 0;
+        });
+        $this->assertEquals([
+            0 => 'zero',
+            'two' => 2,
+            'four' => 4,
+            4 => 'four'
+        ], $filtered->toArray());
+    }
+
+    public function testFoldReturnsOneValue()
+    {
+        $arr = $this->getFixture('numwords');
+        $col = new Collection($arr);
+
+        $this->assertEquals(11, $col->fold(function($accum, $val, $key, $i) {
+            if (is_int($val)) {
+                return $accum + $val;
+            }
+            return $accum;
+        }));
+
+        $this->assertEquals('[[[[[[[init-zero-0-0]-one-1-1]-2-two-2]-three-3-3]-4-four-4]-5-five-5]-four-4-6]', $col->fold(function($accum, $val, $key, $i) {
+            return "[{$accum}-{$val}-{$key}-{$i}]";
+        }, 'init'), 'Initial value passed in should be the first value of $accum');
+    }
+
     /**
      * @expectedException RuntimeException
      */
