@@ -146,6 +146,33 @@ class CollectionTest extends TestCase
         }
     }
 
+    public function testDistinctReturnsCollectionSansDuplicates()
+    {
+        $arr = $this->getFixture('dups');
+        $col = new Collection($arr);
+
+        $this->assertEquals([
+            'zero' => 0,
+            'one' => 1,
+            'two' => 2,
+            'three' => 3
+        ], $col->distinct()->toArray());
+    }
+
+    public function testDeduplicateRemovesDuplicatesInPlace()
+    {
+        $arr = $this->getFixture('dups');
+        $col = new Collection($arr);
+
+        $this->assertSame($col, $col->deduplicate());
+        $this->assertEquals([
+            'zero' => 0,
+            'one' => 1,
+            'two' => 2,
+            'three' => 3
+        ], $col->toArray());
+    }
+
     /**
      * @expectedException RuntimeException
      */

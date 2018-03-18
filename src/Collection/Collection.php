@@ -334,9 +334,15 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      *
      * @return Collection
      */
-    public function distict()
+    public function distinct()
     {
-
+        $collection = static::factory();
+        foreach ($this as $key => $val) {
+            if (!$collection->contains($val)) {
+                $collection->set($key, $val);
+            }
+        }
+        return $collection;
     }
 
     /**
@@ -346,7 +352,9 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      */
     public function deduplicate()
     {
+        $this->items = array_unique($this->items);
 
+        return $this;
     }
 
     /** ++++                  ++++ **/

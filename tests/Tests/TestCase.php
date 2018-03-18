@@ -20,6 +20,16 @@ class TestCase extends PHPUnit_Framework_TestCase
         $this->fixtures['0index'] = ['zero', 'one', 'two', 'three'];
         $this->fixtures['array'] = ['first', 'second', 'third'];
         $this->fixtures['assoc'] = ['1st' => 'first', '2nd' => 'second', '3rd' => 'third'];
+        $this->fixtures['dups'] = [
+            'zero' => 0,
+            'one' => 1,
+            'two' => 2,
+            'secondzero' => 0,
+            'three' => 3,
+            'secondtwo' => 2,
+            'secondthree' => 3,
+            'thirdzero' => 0
+        ];
     }
 
     public function tearDown()
