@@ -527,6 +527,27 @@ class CollectionTest extends TestCase
         ], $case->sort()->toArray());
     }
 
+    public function testSortAcceptsAnonymousFunctionAsSortAlgorithm()
+    {
+        $arr = $this->getFixture('numwords');
+        $col = new Collection($arr);
+
+        $this->assertSame([
+            'two' => 2,
+            'four' => 4,
+            'five' => 5,
+            1 => 'one',
+            0 => 'zero',
+            4 => 'four',
+            3 => 'three',
+        ], $col->sort(function($a, $b) {
+            if (!is_int($a)) {
+                return strlen($a) - strlen($b);
+            }
+            return $a - $b;
+        })->toArray());
+    }
+
     public function testKSortDefaultsToAlphabeticalCaseSensitiveOrder()
     {
         $namesarr = array_flip($this->getFixture('0index'));
@@ -551,6 +572,26 @@ class CollectionTest extends TestCase
             'a0' => 5,
             'aa' => 2
         ], $case->ksort()->toArray());
+    }
+
+    public function testKSortAcceptsAnonymousFunctionAsSortAlgorithm()
+    {
+        $arr = $this->getFixture('numwords');
+        $col = new Collection($arr);
+        $this->assertSame([
+            0 => 'zero',
+            1 => 'one',
+            3 => 'three',
+            4 => 'four',
+            'two' => 2,
+            'four' => 4,
+            'five' => 5,
+        ], $col->ksort(function($a, $b) {
+            if (is_int($a) && is_int($b)) {
+                return $a - $b;
+            }
+            return strlen($a) - strlen($b);
+        })->toArray());
     }
 
     /** ++++                        ++++ **/
