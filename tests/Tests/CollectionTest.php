@@ -266,6 +266,27 @@ class CollectionTest extends TestCase
         ], $merged->toArray());
     }
 
+    public function testUnionMergesArrayIntoNewCollectionWithoutOverwriting()
+    {
+        $arr1 = $this->getFixture('numwords');
+        $arr2 = ['two' => 'two', 'three' => 3, 'four' => 'four', 4 => 'for'];
+
+        $col = new Collection($arr1);
+        $col2 = new Collection($arr2);
+
+        $union = $col->union($col2);
+        $this->assertEquals([
+            0 => 'zero',
+            1 => 'one',
+            'two' => 2,
+            3 => 'three',
+            'four' => 4,
+            'five' => 5,
+            4 => 'four',
+            'three' => 3
+        ], $union->toArray());
+    }
+
     /**
      * @expectedException RuntimeException
      */

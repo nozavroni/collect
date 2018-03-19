@@ -428,6 +428,10 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
+     * Create a new collection with a union of this collection and $items
+     *
+     * This method is similar to merge, except that existing items will not be overwritten.
+     *
      * @param $items
      */
     public function union($items)
@@ -438,7 +442,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
 
         $collection = clone $this;
         foreach ($items as $key => $val) {
-            $collection->set($key, $val);
+            $collection->set($key, $val, false);
         }
         return $collection;
     }
