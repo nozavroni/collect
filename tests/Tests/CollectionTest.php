@@ -594,6 +594,25 @@ class CollectionTest extends TestCase
         })->toArray());
     }
 
+    public function testAppendAddsArrayToCollectionWithoutRegardToKey()
+    {
+        $arr1 = $this->getFixture('assoc');
+        $arr2 = $this->getFixture('numwords');
+        $col = new Collection($arr1);
+
+        $this->assertSame($col, $col->append($arr2));
+        $this->assertSame([
+            '1st' => 'first', '2nd' => 'second', '3rd' => 'third',
+            'zero',
+            'one',
+            2,
+            'three',
+            4,
+            5,
+            'four'
+        ], $col->toArray());
+    }
+
     /** ++++                        ++++ **/
     /** ++ Interface Compliance Tests ++ **/
     /** ++++                        ++++ **/

@@ -402,6 +402,26 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
+     * Append items to collection without regard to keys
+     *
+     * @param array|Traversable $items
+     *
+     * @return $this
+     */
+    public function append($items)
+    {
+        if (!is_traversable($items)) {
+            throw new RuntimeException("Invalid input type for " . __METHOD__ . ", must be array or Traversable");
+        }
+
+        foreach ($items as $val) {
+            $this->add($val);
+        }
+
+        return $this;
+    }
+
+    /**
      * Get a new collection with only distinct values
      *
      * @return Collection
