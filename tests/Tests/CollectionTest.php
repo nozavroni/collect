@@ -266,6 +266,15 @@ class CollectionTest extends TestCase
         ], $merged->toArray());
     }
 
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testMergeThrowsExceptionIfPassedInvalidInput()
+    {
+        $col = new Collection();
+        $col->merge(false);
+    }
+
     public function testUnionMergesArrayIntoNewCollectionWithoutOverwriting()
     {
         $arr1 = $this->getFixture('numwords');
@@ -290,10 +299,10 @@ class CollectionTest extends TestCase
     /**
      * @expectedException RuntimeException
      */
-    public function testMergeThrowsExceptionIfPassedInvalidInput()
+    public function testUnionThrowsExceptionIfPassedInvalidInput()
     {
         $col = new Collection();
-        $col->merge(false);
+        $col->union('invalid input');
     }
 
     // public function test
