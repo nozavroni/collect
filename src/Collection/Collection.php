@@ -134,6 +134,44 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
+     * Get the key of the first item found matching $item
+     *
+     * @param mixed $item
+     *
+     * @return mixed|null
+     */
+    public function keyOf($item)
+    {
+        foreach ($this as $key => $val) {
+            if ($item === $val) {
+                return $key;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the offset (index) of the first item found that matches $item
+     *
+     * @param mixed $item
+     *
+     * @return int|null
+     */
+    public function indexOf($item)
+    {
+        $i = 0;
+        foreach ($this as $key => $val) {
+            if ($item === $val) {
+                return $i;
+            }
+            $i++;
+        }
+
+        return null;
+    }
+
+    /**
      * Get item by key, with an optional default return value
      *
      * @param mixed $key

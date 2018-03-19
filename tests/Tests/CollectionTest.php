@@ -305,7 +305,27 @@ class CollectionTest extends TestCase
         $col->union('invalid input');
     }
 
-    // public function test
+    public function testIndexOfReturnsFirstIndexOfFoundItem()
+    {
+        $arr = $this->getFixture('dups');
+        $col = new Collection($arr);
+
+        $this->assertEquals(1, $col->indexOf(1));
+        $this->assertEquals(2, $col->indexOf(2));
+        $this->assertEquals(4, $col->indexOf(3));
+        $this->assertNull($col->indexOf(4));
+    }
+
+    public function testKeyOfReturnsFirstKeyOfFoundItem()
+    {
+        $arr = $this->getFixture('dups');
+        $col = new Collection($arr);
+
+        $this->assertEquals('one', $col->keyOf(1));
+        $this->assertEquals('two', $col->keyOf(2));
+        $this->assertEquals('three', $col->keyOf(3));
+        $this->assertNull($col->keyOf(4));
+    }
 
     /**
      * @expectedException RuntimeException
