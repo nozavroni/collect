@@ -494,6 +494,65 @@ class CollectionTest extends TestCase
         $this->assertSame(array_keys($arr), $keys->toArray());
     }
 
+    public function testSortDefaultsToAlphabeticalCaseSensitiveOrder()
+    {
+        $namesarr = $this->getFixture('0index');
+        $names = new Collection($namesarr);
+
+        $this->assertSame([
+            0 => 'zero',
+            1 => 'one',
+            2 => 'two',
+            3 => 'three'
+        ], $names->toArray());
+
+        $this->assertSame([
+            1 => 'one',
+            3 => 'three',
+            2 => 'two',
+            0 => 'zero'
+        ], $names->sort()->toArray());
+
+        $case = new Collection($arr = ['Ag', 'AA', 'aa', 'BA', 'AB', 'a0', 0, 1, '0bs']);
+        $this->assertSame([
+            6 => 0,
+            8 => '0bs',
+            7 => 1,
+            1 => 'AA',
+            4 => 'AB',
+            0 => 'Ag',
+            3 => 'BA',
+            5 => 'a0',
+            2 => 'aa'
+        ], $case->sort()->toArray());
+    }
+
+    public function testKSortDefaultsToAlphabeticalCaseSensitiveOrder()
+    {
+        $namesarr = array_flip($this->getFixture('0index'));
+        $names = new Collection($namesarr);
+
+        $this->assertSame([
+            'one' => 1,
+            'three' => 3,
+            'two' => 2,
+            'zero' => 0
+        ], $names->ksort()->toArray());
+
+        $case = new Collection(array_flip(['Ag', 'AA', 'aa', 'BA', 'AB', 'a0', 0, 1, '0bs']));
+        $this->assertSame([
+            0 => 6,
+            '0bs' => 8,
+            1 => 7,
+            'AA' => 1,
+            'AB' => 4,
+            'Ag' => 0,
+            'BA' => 3,
+            'a0' => 5,
+            'aa' => 2
+        ], $case->ksort()->toArray());
+    }
+
     /** ++++                        ++++ **/
     /** ++ Interface Compliance Tests ++ **/
     /** ++++                        ++++ **/

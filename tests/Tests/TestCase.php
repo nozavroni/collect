@@ -39,6 +39,7 @@ class TestCase extends PHPUnit_Framework_TestCase
             'five' => 5,
             4 => 'four'
         ];
+        $this->fixtures['names'] = ['thomas','lyle','luke','timmy','adam','aaron','ben','carl','zach','jack','lincoln','jason','tony','jesse','margaret','charlotte','isabel','kennedy','lorrie','elizabeth','charles'];
     }
 
     public function tearDown()

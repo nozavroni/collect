@@ -136,6 +136,8 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Get the key of the first item found matching $item
      *
+     * @todo Perhaps this should allow a callback in place of $item?
+     *
      * @param mixed $item
      *
      * @return mixed|null
@@ -153,6 +155,8 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
 
     /**
      * Get the offset (index) of the first item found that matches $item
+     *
+     * @todo Perhaps this should allow a callback in place of $item?
      *
      * @param mixed $item
      *
@@ -362,15 +366,39 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * Sort the collection
+     * Sort the collection (using values)
      *
-     * @param mixed $algo
+     * @param callable $alg
      *
-     * @return Collection
+     * @return $this
      */
-    public function sort($algo = null)
+    public function sort(callable $alg = null)
     {
+        if (is_null($alg)) {
+            // case-sensitive string comparison is the default sorting mechanism
+            $alg = 'strcmp';
+        }
+        uasort($this->items, $alg);
 
+        return $this;
+    }
+
+    /**
+     * Sort the collection (using keys)
+     *
+     * @param callable $alg
+     *
+     * @return $this
+     */
+    public function ksort(callable $alg = null)
+    {
+        if (is_null($alg)) {
+            // case-sensitive string comparison is the default sorting mechanism
+            $alg = 'strcmp';
+        }
+        uksort($this->items, $alg);
+
+        return $this;
     }
 
     /**
