@@ -622,6 +622,44 @@ class CollectionTest extends TestCase
         $col->append(true);
     }
 
+    public function testFirstReturnsFirstItemInCollectionIfNoCallbackPassedIn()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection($arr);
+
+        $this->assertEquals('first', $col->first());
+    }
+
+    public function testFirstReturnsFirstItemMatchingCallbackUsingVal()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection($arr);
+
+        $this->assertEquals('third', $col->first(function($val) {
+            return strpos($val, 'h') !== false;
+        }));
+    }
+
+    public function testFirstReturnsFirstItemMatchingCallbackUsingValAndKey()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection($arr);
+
+        $this->assertEquals('second', $col->first(function($val, $key) {
+            return strpos($key, 'n') !== false;
+        }));
+    }
+
+    public function testFirstReturnsFirstItemMatchingCallbackUsingValKeyAndIndex()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection($arr);
+
+        $this->assertEquals('second', $col->first(function($val, $key, $index) {
+            return $index > 0;
+        }));
+    }
+
     /** ++++                        ++++ **/
     /** ++ Interface Compliance Tests ++ **/
     /** ++++                        ++++ **/

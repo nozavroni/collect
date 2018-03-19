@@ -422,6 +422,21 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
+     * Return the first item in collection (or first matching a callback).
+     */
+    public function first(callable $callback = null)
+    {
+        $index = 0;
+        foreach ($this as $key => $val) {
+            if (is_null($callback) || $callback($val, $key, $index++)) {
+                return $val;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Get a new collection with only distinct values
      *
      * @return Collection
