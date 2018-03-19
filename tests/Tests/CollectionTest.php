@@ -660,6 +660,36 @@ class CollectionTest extends TestCase
         }));
     }
 
+    public function testLastReturnsLastItemMatchingCallbackUsingVal()
+    {
+        $arr = $this->getFixture('numwords');
+        $col = new Collection($arr);
+
+        $this->assertEquals(5, $col->last(function($val) {
+            return is_int($val);
+        }));
+    }
+
+    public function testLastReturnsLastItemMatchingCallbackUsingValAndKey()
+    {
+        $arr = $this->getFixture('numwords');
+        $col = new Collection($arr);
+
+        $this->assertEquals(4, $col->last(function($val, $key) {
+            return strpos($key, 'o') !== false;
+        }));
+    }
+
+    public function testLastReturnsLastItemMatchingCallbackUsingValKeyAndIndex()
+    {
+        $arr = $this->getFixture('numwords');
+        $col = new Collection($arr);
+
+        $this->assertEquals(5, $col->last(function($val, $key, $index) {
+            return $index % 2 != 0;
+        }));
+    }
+
     /** ++++                        ++++ **/
     /** ++ Interface Compliance Tests ++ **/
     /** ++++                        ++++ **/

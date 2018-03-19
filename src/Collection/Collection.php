@@ -422,7 +422,11 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * Return the first item in collection (or first matching a callback).
+     * Return first item or first item where callback returns true
+     *
+     * @param callable|null $callback
+     *
+     * @return mixed|null
      */
     public function first(callable $callback = null)
     {
@@ -434,6 +438,18 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
         }
 
         return null;
+    }
+
+    /**
+     * Return last item or last item where callback returns true
+     *
+     * @param callable|null $callback
+     *
+     * @return mixed|null
+     */
+    public function last(callable $callback = null)
+    {
+        return $this->reverse()->first($callback);
     }
 
     /**
