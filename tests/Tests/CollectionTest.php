@@ -613,6 +613,15 @@ class CollectionTest extends TestCase
         ], $col->toArray());
     }
 
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testAppendThrowsRuntimeExceptionIfPassedNonIterable()
+    {
+        $col = new Collection();
+        $col->append(true);
+    }
+
     /** ++++                        ++++ **/
     /** ++ Interface Compliance Tests ++ **/
     /** ++++                        ++++ **/
