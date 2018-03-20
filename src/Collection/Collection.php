@@ -12,6 +12,11 @@ use function Noz\is_traversable;
 
 /**
  * Nozavroni Collection
+ *
+ * Basically an array wrapper with a bunch of super useful methods for working with its items and/or create new collections from its items.
+ *
+ * @note None of the methods in this class have a $preserveKeys param. That is by design. I don't think it's necessary.
+ *       Instead, keys are ALWAYS preserved and if you want to NOT preserve keys, simply call Collection::values().
  */
 class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
 {
@@ -453,6 +458,27 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
+     * Map collection
+     *
+     * Create a new collection using the results of a callback function on each item in this collection.
+     *
+     * @param callable $callback
+     *
+     * @return Collection
+     */
+    public function map(callable $callback)
+    {
+        $collection = static::factory();
+
+        $index = 0;
+        foreach ($this as $key => $val) {
+            $collection->set($key, $callback($val, $key, $index++));
+        }
+
+        return $collection;
+    }
+
+    /**
      * Get a new collection with only distinct values
      *
      * @return Collection
@@ -465,6 +491,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
                 $collection->set($key, $val);
             }
         }
+
         return $collection;
     }
 
@@ -521,6 +548,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
         foreach ($this as $key => $val) {
             $folded = $callback($folded, $val, $key, $index++);
         }
+
         return $folded;
     }
 
@@ -541,6 +569,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
         foreach ($items as $key => $val) {
             $collection->set($key, $val);
         }
+
         return $collection;
     }
 
@@ -561,6 +590,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
         foreach ($items as $key => $val) {
             $collection->set($key, $val, false);
         }
+
         return $collection;
     }
 
@@ -650,6 +680,8 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
 
     /**
      * {@inheritDoc}
+     *
+     * @todo Should this return $this?
      */
     public function rewind()
     {

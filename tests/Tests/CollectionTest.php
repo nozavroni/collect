@@ -690,6 +690,48 @@ class CollectionTest extends TestCase
         }));
     }
 
+    public function testMapCallsCallbackOnEachItemAndReturnsCollectionOfResultsValueOnly()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection($arr);
+
+        $this->assertSame([
+            '1st' => 5,
+            '2nd' => 6,
+            '3rd' => 5
+        ], $col->map(function($val) {
+            return strlen($val);
+        })->toArray());
+    }
+
+    public function testMapCallsCallbackOnEachItemAndReturnsCollectionOfResultsValueAndKey()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection($arr);
+
+        $this->assertSame([
+            '1st' => '1st: first',
+            '2nd' => '2nd: second',
+            '3rd' => '3rd: third'
+        ], $col->map(function($val, $key) {
+            return "{$key}: {$val}";
+        })->toArray());
+    }
+
+    public function testMapCallsCallbackOnEachItemAndReturnsCollectionOfResultsValueKeyAndIndex()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection($arr);
+
+        $this->assertSame([
+            '1st' => '1st: first [0]',
+            '2nd' => '2nd: second [1]',
+            '3rd' => '3rd: third [2]'
+        ], $col->map(function($val, $key, $index) {
+            return "{$key}: {$val} [{$index}]";
+        })->toArray());
+    }
+
     /** ++++                        ++++ **/
     /** ++ Interface Compliance Tests ++ **/
     /** ++++                        ++++ **/
