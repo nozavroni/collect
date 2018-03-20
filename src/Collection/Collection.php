@@ -5,6 +5,7 @@ use Countable;
 use JsonSerializable;
 use Iterator;
 use ArrayAccess;
+use function Noz\to_array;
 use RuntimeException;
 use Traversable;
 
@@ -476,6 +477,20 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
         }
 
         return $collection;
+    }
+
+    public function combine($items)
+    {
+        if (!is_traversable($items)) {
+            throw new RuntimeException("Invalid input type for " . __METHOD__ . ", must be array or Traversable");
+        }
+
+        $items = to_array($items);
+        if (count($items) != count($this->items)) {
+            throw new RuntimeException("Invalid input for " . __METHOD__ . ", number of items does not match");
+        }
+
+        return static::factory(array_combine($this->items, $items));
     }
 
     /**

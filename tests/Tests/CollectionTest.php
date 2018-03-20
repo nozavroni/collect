@@ -1,6 +1,7 @@
 <?php
 namespace Noz\Tests;
 
+use ArrayIterator;
 use Noz\Collection\Collection;
 use RuntimeException;
 
@@ -140,7 +141,7 @@ class CollectionTest extends TestCase
         $arr = $this->getFixture('assoc');
         $col = new Collection($arr);
 
-        for ($i=0;$i<100;$i++) {
+        for ($i = 0; $i < 100; $i++) {
             $item = $col->random();
             $this->assertTrue(in_array($item, $arr));
         }
@@ -178,7 +179,7 @@ class CollectionTest extends TestCase
         $arr = $this->getFixture('numwords');
         $col = new Collection($arr);
 
-        $filtered = $col->filter(function($val, $key) {
+        $filtered = $col->filter(function ($val, $key) {
             return is_int($val);
         });
         $this->assertEquals([
@@ -187,7 +188,7 @@ class CollectionTest extends TestCase
             'five' => 5
         ], $filtered->toArray());
 
-        $filtered = $col->filter(function($val, $key) {
+        $filtered = $col->filter(function ($val, $key) {
             return is_int($key);
         });
         $this->assertEquals([
@@ -197,7 +198,7 @@ class CollectionTest extends TestCase
             4 => 'four'
         ], $filtered->toArray());
 
-        $filtered = $col->filter(function($val, $key, $i) {
+        $filtered = $col->filter(function ($val, $key, $i) {
             return $i % 2 == 0;
         });
         $this->assertEquals([
@@ -213,14 +214,14 @@ class CollectionTest extends TestCase
         $arr = $this->getFixture('numwords');
         $col = new Collection($arr);
 
-        $this->assertEquals(11, $col->fold(function($accum, $val, $key, $i) {
+        $this->assertEquals(11, $col->fold(function ($accum, $val, $key, $i) {
             if (is_int($val)) {
                 return $accum + $val;
             }
             return $accum;
         }));
 
-        $this->assertEquals('[[[[[[[init-zero-0-0]-one-1-1]-2-two-2]-three-3-3]-4-four-4]-5-five-5]-four-4-6]', $col->fold(function($accum, $val, $key, $i) {
+        $this->assertEquals('[[[[[[[init-zero-0-0]-one-1-1]-2-two-2]-three-3-3]-4-four-4]-5-five-5]-four-4-6]', $col->fold(function ($accum, $val, $key, $i) {
             return "[{$accum}-{$val}-{$key}-{$i}]";
         }, 'init'), 'Initial value passed in should be the first value of $accum');
     }
@@ -540,7 +541,7 @@ class CollectionTest extends TestCase
             0 => 'zero',
             4 => 'four',
             3 => 'three',
-        ], $col->sort(function($a, $b) {
+        ], $col->sort(function ($a, $b) {
             if (!is_int($a)) {
                 return strlen($a) - strlen($b);
             }
@@ -586,7 +587,7 @@ class CollectionTest extends TestCase
             'two' => 2,
             'four' => 4,
             'five' => 5,
-        ], $col->ksort(function($a, $b) {
+        ], $col->ksort(function ($a, $b) {
             if (is_int($a) && is_int($b)) {
                 return $a - $b;
             }
@@ -635,7 +636,7 @@ class CollectionTest extends TestCase
         $arr = $this->getFixture('assoc');
         $col = new Collection($arr);
 
-        $this->assertEquals('third', $col->first(function($val) {
+        $this->assertEquals('third', $col->first(function ($val) {
             return strpos($val, 'h') !== false;
         }));
     }
@@ -645,7 +646,7 @@ class CollectionTest extends TestCase
         $arr = $this->getFixture('assoc');
         $col = new Collection($arr);
 
-        $this->assertEquals('second', $col->first(function($val, $key) {
+        $this->assertEquals('second', $col->first(function ($val, $key) {
             return strpos($key, 'n') !== false;
         }));
     }
@@ -655,7 +656,7 @@ class CollectionTest extends TestCase
         $arr = $this->getFixture('assoc');
         $col = new Collection($arr);
 
-        $this->assertEquals('second', $col->first(function($val, $key, $index) {
+        $this->assertEquals('second', $col->first(function ($val, $key, $index) {
             return $index > 0;
         }));
     }
@@ -665,7 +666,7 @@ class CollectionTest extends TestCase
         $arr = $this->getFixture('numwords');
         $col = new Collection($arr);
 
-        $this->assertEquals(5, $col->last(function($val) {
+        $this->assertEquals(5, $col->last(function ($val) {
             return is_int($val);
         }));
     }
@@ -675,7 +676,7 @@ class CollectionTest extends TestCase
         $arr = $this->getFixture('numwords');
         $col = new Collection($arr);
 
-        $this->assertEquals(4, $col->last(function($val, $key) {
+        $this->assertEquals(4, $col->last(function ($val, $key) {
             return strpos($key, 'o') !== false;
         }));
     }
@@ -685,7 +686,7 @@ class CollectionTest extends TestCase
         $arr = $this->getFixture('numwords');
         $col = new Collection($arr);
 
-        $this->assertEquals(5, $col->last(function($val, $key, $index) {
+        $this->assertEquals(5, $col->last(function ($val, $key, $index) {
             return $index % 2 != 0;
         }));
     }
@@ -699,7 +700,7 @@ class CollectionTest extends TestCase
             '1st' => 5,
             '2nd' => 6,
             '3rd' => 5
-        ], $col->map(function($val) {
+        ], $col->map(function ($val) {
             return strlen($val);
         })->toArray());
     }
@@ -713,7 +714,7 @@ class CollectionTest extends TestCase
             '1st' => '1st: first',
             '2nd' => '2nd: second',
             '3rd' => '3rd: third'
-        ], $col->map(function($val, $key) {
+        ], $col->map(function ($val, $key) {
             return "{$key}: {$val}";
         })->toArray());
     }
@@ -727,9 +728,74 @@ class CollectionTest extends TestCase
             '1st' => '1st: first [0]',
             '2nd' => '2nd: second [1]',
             '3rd' => '3rd: third [2]'
-        ], $col->map(function($val, $key, $index) {
+        ], $col->map(function ($val, $key, $index) {
             return "{$key}: {$val} [{$index}]";
         })->toArray());
+    }
+
+    public function testCombineUsesCollectionForKeysAndIncomingItemsForValues()
+    {
+        $arr = $this->getFixture('array');
+        $col = new Collection($arr);
+
+        $arr2 = ['it', 'wasn\'t', 'me'];
+
+        $this->assertSame([
+            'first' => 'it',
+            'second' => 'wasn\'t',
+            'third' => 'me'
+        ], $col->combine($arr2)->toArray());
+    }
+
+    public function testCombineUsesCollectionForKeysAndIncomingCollectionForValues()
+    {
+        $arr = $this->getFixture('array');
+        $col = new Collection($arr);
+
+        $arr2 = ['it', 'wasn\'t', 'me'];
+        $col2 = new Collection($arr2);
+
+        $this->assertSame([
+            'first' => 'it',
+            'second' => 'wasn\'t',
+            'third' => 'me'
+        ], $col->combine($col2)->toArray());
+    }
+
+    public function testCombineUsesCollectionForKeysAndIncomingTraversableForValues()
+    {
+        $arr = $this->getFixture('array');
+        $col = new Collection($arr);
+
+        $arr2 = ['it', 'wasn\'t', 'me'];
+        $iter = new ArrayIterator($arr2);
+
+        $this->assertSame([
+            'first' => 'it',
+            'second' => 'wasn\'t',
+            'third' => 'me'
+        ], $col->combine($iter)->toArray());
+    }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testCombineThrowsExceptionIfPassedInvalidInput()
+    {
+        $arr = $this->getFixture('array');
+        $col = new Collection($arr);
+        $col->combine('foo');
+    }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testCombineThrowsExceptionIfPassedItemsWithDifferentNumItems()
+    {
+        $arr = $this->getFixture('array');
+        $arr2 = $this->getFixture('0index');
+        $col = new Collection($arr);
+        $col->combine($arr2);
     }
 
     /** ++++                        ++++ **/
