@@ -777,6 +777,23 @@ class CollectionTest extends TestCase
         ], $col->combine($iter)->toArray());
     }
 
+    public function testEachCallsCallbackOnEachItemPassively()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection($arr);
+
+        $test = [];
+
+        $this->assertSame($col, $col->each(function($val, $key, $index) use (&$test) {
+            $test[] = "{$key}-{$val}-{$index}";
+        }));
+        $this->assertSame([
+            "1st-first-0",
+            "2nd-second-1",
+            "3rd-third-2"
+        ], $test);
+    }
+
     /**
      * @expectedException RuntimeException
      */

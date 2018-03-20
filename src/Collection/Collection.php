@@ -41,6 +41,8 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      *
      * @param array $items
      *
+     * @todo call to_array on $items and don't require input to be an array.
+     *
      * @return Collection
      */
     public static function factory(array $items = [])
@@ -479,6 +481,15 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
         return $collection;
     }
 
+    /**
+     * Combine collection with another traversable/collection
+     *
+     * Using this collection's keys, and the incoming collection's values, a new collection is created and returned.
+     *
+     * @param array|Traversable $items
+     *
+     * @return Collection
+     */
     public function combine($items)
     {
         if (!is_traversable($items)) {
@@ -607,6 +618,23 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
         }
 
         return $collection;
+    }
+
+    /**
+     * Call callback for each item in collection, passively
+     *
+     * @param callable $callback
+     *
+     * @return $this
+     */
+    public function each(callable $callback)
+    {
+        $index = 0;
+        foreach ($this as $key => $val) {
+            $callback($val, $key, $index++);
+        }
+
+        return $this;
     }
 
     /** ++++                  ++++ **/
