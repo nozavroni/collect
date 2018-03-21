@@ -685,6 +685,21 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
         return static::factory(array_chunk($this->items, $size, true));
     }
 
+    /**
+     * Get a new collection of $count chunks
+     *
+     * @todo It might be useful to have a method that spreads remainder items more evenly so you don't end up with the
+     *       last item containing only one or two items.
+     *
+     * @param int $count
+     *
+     * @return Collection
+     */
+    public function slice($count = 1)
+    {
+        return $this->chunk(ceil($this->count() / $count));
+    }
+
     /** ++++                  ++++ **/
     /** ++ Interface Compliance ++ **/
     /** ++++                  ++++ **/
