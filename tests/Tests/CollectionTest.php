@@ -545,7 +545,9 @@ class CollectionTest extends TestCase
             if (!is_int($a)) {
                 return strlen($a) - strlen($b);
             }
-            return $a - $b;
+            if ($a == $b) return 0;
+            elseif ($a > $b) return 1;
+            else return -1;
         })->toArray());
     }
 
