@@ -531,11 +531,12 @@ class CollectionTest extends TestCase
     public function testSortAcceptsAnonymousFunctionAsSortAlgorithm()
     {
         $arr = $this->getFixture('numwords');
+        $arr[0] = 'ze';
         $col = new Collection($arr);
 
         $this->assertSame([
+            0 => 'ze',
             1 => 'one',
-            0 => 'zero',
             4 => 'four',
             3 => 'three',
             'two' => 2,
