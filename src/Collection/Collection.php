@@ -637,6 +637,54 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
         return $this;
     }
 
+    /**
+     * Assert callback returns $expected value for each item in collection.
+     *
+     * @todo This can be used to easily make methods like all($callback) and none($callback).
+     *
+     * @param callable $callback
+     * @param bool $expected
+     *
+     * @return bool
+     */
+    public function assert(callable $callback, $expected = true)
+    {
+        $index = 0;
+        foreach ($this as $key => $val) {
+            if ($callback($val, $key, $index++) !== $expected) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Pipe collection through a callback
+     *
+     * @param callable $callback
+     *
+     * @return mixed
+     */
+    public function pipe(callable $callback)
+    {
+        return $callback($this);
+    }
+
+    /**
+     * Get new collection in chunks of $size
+     *
+     * Creates a new collection of arrays of $size length. The remainder items will be placed at the end.
+     *
+     * @param int $size
+     *
+     * @return Collection
+     */
+    public function chunk($size)
+    {
+        return static::factory(array_chunk($this->items, $size, true));
+    }
+
     /** ++++                  ++++ **/
     /** ++ Interface Compliance ++ **/
     /** ++++                  ++++ **/

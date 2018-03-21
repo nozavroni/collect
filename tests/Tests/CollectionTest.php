@@ -794,6 +794,17 @@ class CollectionTest extends TestCase
         ], $test);
     }
 
+    public function testAssertEnsuresGivenValueReturnedFromCallback()
+    {
+        $arr = $this->getFixture('array');
+        $col = new Collection($arr);
+
+        $this->assertTrue($col->assert(function($val, $key, $index) { return true; }), "Assert should default to true");
+        $this->assertFalse($col->assert(function($val, $key, $index) { return true; }, false), "Assert should default to true");
+        $this->assertFalse($col->assert(function($val, $key, $index) { return $val; }, ''), "If callback doesn't return the assert value, assert should return false");
+        $this->assertTrue($col->assert(function($val, $key, $index) { return strlen($val) == 10; }, false));
+    }
+
     /**
      * @expectedException RuntimeException
      */
@@ -813,6 +824,36 @@ class CollectionTest extends TestCase
         $arr2 = $this->getFixture('0index');
         $col = new Collection($arr);
         $col->combine($arr2);
+    }
+
+    public function testPipePassesCollectionThroughCallback()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection($arr);
+
+        $this->assertFalse($col->pipe(function(Collection $col){
+            return $col->isEmpty();
+        }));
+
+        $col->clear();
+        $this->assertTrue($col->pipe(function(Collection $col){
+            return $col->isEmpty();
+        }));
+    }
+
+    public function testChunkReturnsNewCollectionOfArraysOfSpecifiedSize()
+    {
+        $arr = range('a', 'z');
+        $col = new Collection($arr);
+
+        $this->assertSame([
+            ['a','b','c','d','e'],
+            [5 => 'f',6 => 'g',7 => 'h',8 => 'i',9 => 'j'],
+            [10 => 'k',11 => 'l',12 => 'm',13 => 'n',14 => 'o'],
+            [15 => 'p',16 => 'q',17 => 'r',18 => 's',19 => 't'],
+            [20 => 'u',21 => 'v',22 => 'w',23 => 'x',24 => 'y'],
+            [25 => 'z',]
+        ], $col->chunk(5)->toArray());
     }
 
     /** ++++                        ++++ **/
