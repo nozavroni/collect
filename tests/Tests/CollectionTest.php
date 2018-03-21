@@ -534,16 +534,20 @@ class CollectionTest extends TestCase
         $col = new Collection($arr);
 
         $this->assertSame([
-            'two' => 2,
-            'four' => 4,
-            'five' => 5,
             1 => 'one',
             0 => 'zero',
             4 => 'four',
             3 => 'three',
+            'two' => 2,
+            'four' => 4,
+            'five' => 5,
         ], $col->sort(function ($a, $b) {
             if (!is_int($a)) {
-                return strlen($a) - strlen($b);
+                if (!is_int($b)) {
+                    return strlen($a) - strlen($b);
+                } else {
+                    return 0;
+                }
             }
             if ($a == $b) return 0;
             elseif ($a > $b) return 1;
