@@ -262,7 +262,8 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Determine if collection contains given value
      *
-     * @param mixed $val
+     * @param mixed|callable $val
+     * @param mixed $key
      *
      * @return bool
      */
@@ -710,7 +711,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      *
      * @return Collection
      */
-    public function slice($count = 1)
+    public function split($count = 1)
     {
         return $this->chunk(ceil($this->count() / $count));
     }
