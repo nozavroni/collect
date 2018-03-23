@@ -445,6 +445,27 @@ class CollectionTest extends TestCase
         $this->assertTrue($col->contains('first'));
     }
 
+    public function testContainsAcceptsKeyAsSecondArgumentAndChecksKeyIfProvided()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection($arr);
+
+        $this->assertTrue($col->contains('first'));
+        $this->assertFalse($col->contains('first', '2nd'));
+        $this->assertFalse($col->contains('second', '1st'));
+        $this->assertTrue($col->contains('first', '1st'));
+    }
+
+    public function testContainAcceptsCallbackForEqualityTest()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection($arr);
+
+        $this->assertTrue($col->contains(function($val) { return strpos($val, 's') === 0; }));
+        $this->assertTrue($col->contains(function($val, $key) { return strpos($key, '1') === 0; }));
+        $this->assertFalse($col->contains(function($val) { return strpos($val, 's') === 0; }, '1st'));
+    }
+
     public function testPullRemovesItemAndReturnsIt()
     {
         $arr = $this->getFixture('assoc');

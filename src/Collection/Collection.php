@@ -5,11 +5,11 @@ use Countable;
 use JsonSerializable;
 use Iterator;
 use ArrayAccess;
-use function Noz\to_array;
 use RuntimeException;
 use Traversable;
 
-use function Noz\is_traversable;
+use function Noz\is_traversable,
+             Noz\to_array;
 
 /**
  * Nozavroni Collection
@@ -18,6 +18,7 @@ use function Noz\is_traversable;
  *
  * @note None of the methods in this class have a $preserveKeys param. That is by design. I don't think it's necessary.
  *       Instead, keys are ALWAYS preserved and if you want to NOT preserve keys, simply call Collection::values().
+ * @todo Scour Laravel's collection methods for ideas (for instance contains($val, $key) to check key as well as value)
  */
 class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
 {
@@ -265,9 +266,23 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      *
      * @return bool
      */
-    public function contains($val)
+    public function contains($val, $key = null)
     {
-        return in_array($val, $this->items, true);
+        $index = 0;
+        foreach ($this as $k => $v) {
+            $matchkey = is_null($key) || $key === $k;
+            if (is_callable($val)) {
+                if ($val($v, $k, $index)) {
+                    return $matchkey;
+                }
+            } else {
+                if ($val === $v) {
+                    return $matchkey;
+                }
+            }
+            $index++;
+        }
+        return false;
     }
 
     /**
