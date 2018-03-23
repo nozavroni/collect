@@ -716,6 +716,19 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
         return $this->chunk(ceil($this->count() / $count));
     }
 
+    /**
+     * Get a slice of this collection.
+     *
+     * @param int $offset
+     * @param int|null $length
+     *
+     * @return Collection
+     */
+    public function slice($offset, $length = null)
+    {
+        return static::factory(array_slice($this->items, $offset, $length, true));
+    }
+
     /** ++++                  ++++ **/
     /** ++ Interface Compliance ++ **/
     /** ++++                  ++++ **/

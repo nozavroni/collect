@@ -897,6 +897,64 @@ class CollectionTest extends TestCase
         ], $col->split(4)->toArray());
     }
 
+    public function testSliceReturnsCollectionOfSliceOfCurrentCollection()
+    {
+        $arr = range('a', 'z');
+        $col = new Collection($arr);
+
+        $this->assertSame([
+            5 => 'f',
+            6 => 'g',
+            7 => 'h',
+            8 => 'i',
+            9 => 'j',
+            10 => 'k',
+            11 => 'l',
+            12 => 'm',
+            13 => 'n',
+            14 => 'o',
+            15 => 'p',
+            16 => 'q',
+            17 => 'r',
+            18 => 's',
+            19 => 't',
+            20 => 'u',
+            21 => 'v',
+            22 => 'w',
+            23 => 'x',
+            24 => 'y',
+            25 => 'z'
+        ], $col->slice(5)->toArray(), "Slice should be able to start at a position and go to the end (if no length provided)");
+        $this->assertSame([
+            0 => 'a',
+            1 => 'b',
+            2 => 'c',
+            3 => 'd',
+            4 => 'e'
+        ], $col->slice(0, 5)->toArray(), "Slice should be able to start at zero and go to given length");
+        $this->assertSame([
+            5 => 'f',
+            6 => 'g',
+            7 => 'h'
+        ], $col->slice(5, 3)->toArray(), "Slice should be able to start at a given position and go to given length");
+        $this->assertSame([
+            16 => 'q',
+            17 => 'r',
+            18 => 's',
+            19 => 't',
+            20 => 'u'
+        ], $col->slice(-10, 5)->toArray(), "Slice should be able to start at a negative position and go to a given length");
+        $this->assertSame([
+            16 => 'q',
+            17 => 'r',
+            18 => 's',
+            19 => 't',
+            20 => 'u',
+            21 => 'v',
+            22 => 'w'
+        ], $col->slice(-10, -3)->toArray(), "Slice should be able to start at a negative position and go to a negative length");
+    }
+
     /** ++++                        ++++ **/
     /** ++ Interface Compliance Tests ++ **/
     /** ++++                        ++++ **/
