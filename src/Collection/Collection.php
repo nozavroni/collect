@@ -729,6 +729,54 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
         return static::factory(array_slice($this->items, $offset, $length, true));
     }
 
+    /**
+     * Get collection with only differing items
+     *
+     * @param array|Traversable $items
+     *
+     * @return Collection
+     */
+    public function diff($items)
+    {
+        return static::factory(array_diff($this->items, to_array($items)));
+    }
+
+    /**
+     * Get collection with only differing items (by key)
+     *
+     * @param array|Traversable $items
+     *
+     * @return Collection
+     */
+    public function kdiff($items)
+    {
+        return static::factory(array_diff_key($this->items, to_array($items)));
+    }
+
+    /**
+     * Get collection with only intersecting items
+     *
+     * @param array|Traversable $items
+     *
+     * @return Collection
+     */
+    public function intersect($items)
+    {
+        return static::factory(array_intersect($this->items, to_array($items)));
+    }
+
+    /**
+     * Get collection with only intersecting items (by key)
+     *
+     * @param array|Traversable $items
+     *
+     * @return Collection
+     */
+    public function kintersect($items)
+    {
+        return static::factory(array_intersect_key($this->items, to_array($items)));
+    }
+
     /** ++++                  ++++ **/
     /** ++ Interface Compliance ++ **/
     /** ++++                  ++++ **/

@@ -955,6 +955,38 @@ class CollectionTest extends TestCase
         ], $col->slice(-10, -3)->toArray(), "Slice should be able to start at a negative position and go to a negative length");
     }
 
+    public function testDiffReturnsCollectionContainingOnlyDifferingItems()
+    {
+        $arr = $this->getFixture('array');
+        $col = new Collection($arr);
+
+        $this->assertSame([1=>'second', 2=>'third'], $col->diff(['b', 'first', 'SECOND', '0'])->toArray(), "Ensure diff accepts array");
+    }
+
+    public function testKDiffReturnsCollectionContainingOnlyDifferingItemsByKey()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection($arr);
+
+        $this->assertSame(['1st' => 'first', '3rd' => 'third'], $col->kdiff(['2nd' => 'SECOND!', '4th' => 'fourth'])->toArray(), "Ensure kdiff accepts array");
+    }
+
+    public function testIntersectReturnsCollectionContainingOnlyIntersectingItems()
+    {
+        $arr = $this->getFixture('array');
+        $col = new Collection($arr);
+
+        $this->assertSame([0 => 'first'], $col->intersect(['b', 'first', 'SECOND', '0'])->toArray(), "Ensure diff accepts array");
+    }
+
+    public function testKIntersectReturnsCollectionContainingOnlyIntersectingItemsByKey()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection($arr);
+
+        $this->assertSame(['1st' => 'first', '2nd' => 'second'], $col->kintersect(['1st' => 'foorst', '2nd' => 'SECOND!', '4th' => 'fourth'])->toArray(), "Ensure kdiff accepts array");
+    }
+
     /** ++++                        ++++ **/
     /** ++ Interface Compliance Tests ++ **/
     /** ++++                        ++++ **/
