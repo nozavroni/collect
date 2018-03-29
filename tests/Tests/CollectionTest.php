@@ -209,6 +209,31 @@ class CollectionTest extends TestCase
         ], $filtered->toArray());
     }
 
+    public function testFilterKeepsOnlyItemsThatEvaluateToTrueIfNoCallbackProvided()
+    {
+        $arr = [
+            '0th' => 0,
+            '1st' => 'first',
+            'null' => null,
+            'true' => true,
+            'empty' => [],
+            'notempty' => [1,2,3],
+            'false' => false,
+            2,
+            100,
+            'emptystring' => '',
+        ];
+        $col = new Collection($arr);
+
+        $this->assertSame([
+            '1st' => 'first',
+            'true' => true,
+            'notempty' => [1,2,3],
+            2,
+            100,
+        ], $col->filter()->toArray());
+    }
+
     public function testFoldReturnsOneValue()
     {
         $arr = $this->getFixture('numwords');
@@ -819,6 +844,23 @@ class CollectionTest extends TestCase
             "1st-first-0",
             "2nd-second-1",
             "3rd-third-2"
+        ], $test);
+    }
+
+    public function testEachBreaksFromIterationIfCallbackReturnsFalse()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection($arr);
+
+        $test = [];
+
+        $this->assertSame($col, $col->each(function($val, $key, $index) use (&$test) {
+            $test[] = "{$key}-{$val}-{$index}";
+            if ($index) return false;
+        }));
+        $this->assertSame([
+            "1st-first-0",
+            "2nd-second-1"
         ], $test);
     }
 

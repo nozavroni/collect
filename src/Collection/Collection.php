@@ -559,13 +559,19 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      *
      * @return Collection
      */
-    public function filter(callable $callback)
+    public function filter(callable $callback = null)
     {
         $collection = static::factory();
         $index = 0;
         foreach ($this as $key => $value) {
-            if ($callback($value, $key, $index++)) {
-                $collection->set($key, $value);
+            if (is_null($callback)) {
+                if ($value) {
+                    $collection->set($key, $value);
+                }
+            } else {
+                if ($callback($value, $key, $index++)) {
+                    $collection->set($key, $value);
+                }
             }
         }
 
@@ -638,6 +644,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
 
     /**
      * Call callback for each item in collection, passively
+     * If at any point the callback returns false, iteration stops.
      *
      * @param callable $callback
      *
@@ -647,7 +654,9 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     {
         $index = 0;
         foreach ($this as $key => $val) {
-            $callback($val, $key, $index++);
+            if ($callback($val, $key, $index++) === false) {
+                break;
+            }
         }
 
         return $this;
