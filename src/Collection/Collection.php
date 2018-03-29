@@ -777,6 +777,54 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
         return static::factory(array_intersect_key($this->items, to_array($items)));
     }
 
+    /**
+     * Remove last item in collection and return it
+     *
+     * @return mixed
+     */
+    public function pop()
+    {
+        return array_pop($this->items);
+    }
+
+    /**
+     * Remove first item in collection and return it (and re-index if numerically indexed)
+     *
+     * @return mixed
+     */
+    public function shift()
+    {
+        return array_shift($this->items);
+    }
+
+    /**
+     * Add item to the end of the collection
+     *
+     * @note This method is no different than add() but I included it for consistency's sake since I have the others
+     *
+     * @param mixed $item
+     *
+     * @return $this
+     */
+    public function push($item)
+    {
+        return $this->add($item);
+    }
+
+    /**
+     * Add item to the beginning of the collection (and re-index if a numerically indexed collection)
+     *
+     * @param mixed $item
+     *
+     * @return $this
+     */
+    public function unshift($item)
+    {
+        array_unshift($this->items, $item);
+
+        return $this;
+    }
+
     /** ++++                  ++++ **/
     /** ++ Interface Compliance ++ **/
     /** ++++                  ++++ **/

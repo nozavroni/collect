@@ -987,6 +987,69 @@ class CollectionTest extends TestCase
         $this->assertSame(['1st' => 'first', '2nd' => 'second'], $col->kintersect(['1st' => 'foorst', '2nd' => 'SECOND!', '4th' => 'fourth'])->toArray(), "Ensure kdiff accepts array");
     }
 
+    public function testPopRemovesLastElementAndReturnsIt()
+    {
+        $arr = $this->getFixture('array');
+        $col = new Collection($arr);
+
+        $this->assertSame(['first','second','third'], $col->toArray());
+        $this->assertEquals('third', $col->pop());
+        // note: pop() does not require re-index for numerically indexed arrays
+        $this->assertSame(['first','second'], $col->toArray());
+    }
+
+    public function testShiftReindexesNumericallyIndexedCollections()
+    {
+        $arr = $this->getFixture('array');
+        $col = new Collection($arr);
+
+        $this->assertSame(['first','second','third'], $col->toArray());
+        $this->assertEquals('first', $col->shift());
+        // note: shift() requires re-index for numerically indexed arrays
+        $this->assertSame([0=>'second',1=>'third'], $col->toArray(), "Ensure shift() causes re-index for numerically indexed collections");
+    }
+
+    public function testShiftRemovesFirstElementAndReturnsItAndDoesntReindexNonnumericallyIndexedCollections()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection($arr);
+
+        $this->assertSame(['1st' => 'first','2nd' => 'second','3rd' => 'third'], $col->toArray());
+        $this->assertEquals('first', $col->shift());
+        // note: shift() requires re-index for numerically indexed arrays
+        $this->assertSame(['2nd' => 'second','3rd' => 'third'], $col->toArray(), "Ensure shift() doesn't cause re-index for non-numerically indexed collections");
+    }
+
+    public function testPushWorksJustLikeAdd()
+    {
+        $arr = $this->getFixture('array');
+        $col = new Collection($arr);
+
+        $this->assertSame(['first','second','third'], $arr);
+        $this->assertSame($col, $col->push('fourth'));
+        $this->assertSame(['first','second','third','fourth'], $col->toArray());
+    }
+
+    public function testUnshiftAddsItemToBeginningOfCollection()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection($arr);
+
+        $this->assertSame(['1st' => 'first','2nd' => 'second','3rd' => 'third'], $col->toArray());
+        $this->assertSame($col, $col->unshift('fourth'));
+        $this->assertSame(['fourth','1st' => 'first','2nd' => 'second','3rd' => 'third'], $col->toArray());
+    }
+
+    public function testUnshiftAddsItemToBeginningOfCollectionAndReindexesIfNumericallyIndexedCollection()
+    {
+        $arr = $this->getFixture('array');
+        $col = new Collection($arr);
+
+        $this->assertSame(['first','second','third'], $col->toArray());
+        $this->assertSame($col, $col->unshift('fourth'));
+        $this->assertSame(['fourth','first','second','third'], $col->toArray());
+    }
+
     /** ++++                        ++++ **/
     /** ++ Interface Compliance Tests ++ **/
     /** ++++                        ++++ **/
