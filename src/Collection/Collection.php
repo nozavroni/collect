@@ -45,8 +45,6 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      *
      * @param mixed $items
      *
-     * @todo call to_array on $items and don't require input to be an array.
-     *
      * @return Collection
      */
     public static function factory($items = null)
@@ -151,16 +149,21 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Get the key of the first item found matching $item
      *
-     * @todo Perhaps this should allow a callback in place of $item?
+     * @todo should this throw an exception if not found?
      *
-     * @param mixed $item
+     * @param mixed|callable $item
      *
      * @return mixed|null
      */
     public function keyOf($item)
     {
+        $index = 0;
         foreach ($this as $key => $val) {
-            if ($item === $val) {
+            if (is_callable($item)) {
+                if ($item($val, $key, $index++)) {
+                    return $key;
+                }
+            } elseif ($item === $val) {
                 return $key;
             }
         }
@@ -171,20 +174,26 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Get the offset (index) of the first item found that matches $item
      *
-     * @todo Perhaps this should allow a callback in place of $item?
+     * @todo should this throw an exception if not found?
      *
-     * @param mixed $item
+     * @param mixed|callable $item
      *
      * @return int|null
      */
     public function indexOf($item)
     {
-        $i = 0;
+        $index = 0;
         foreach ($this as $key => $val) {
-            if ($item === $val) {
-                return $i;
+            if (is_callable($item)) {
+                if ($item($val, $key, $index)) {
+                    return $index;
+                }
+            } else {
+                if ($item === $val) {
+                    return $index;
+                }
             }
-            $i++;
+            $index++;
         }
 
         return null;

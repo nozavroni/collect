@@ -358,6 +358,24 @@ class CollectionTest extends TestCase
         $this->assertNull($col->indexOf(4));
     }
 
+    public function testIndexOfAcceptsCallback()
+    {
+        $arr = $this->getFixture('dups');
+        $col = new Collection($arr);
+
+        $this->assertEquals(4, $col->indexOf(function($val) {
+            return $val > 2;
+        }));
+
+        $this->assertEquals(0, $col->indexOf(function($val, $key) {
+            return strlen($key) > 3;
+        }));
+
+        $this->assertEquals(1, $col->indexOf(function($val, $key, $index) {
+            return $index % 2 != 0;
+        }));
+    }
+
     public function testKeyOfReturnsFirstKeyOfFoundItem()
     {
         $arr = $this->getFixture('dups');
@@ -367,6 +385,24 @@ class CollectionTest extends TestCase
         $this->assertEquals('two', $col->keyOf(2));
         $this->assertEquals('three', $col->keyOf(3));
         $this->assertNull($col->keyOf(4));
+    }
+
+    public function testKeyOfAcceptsCallback()
+    {
+        $arr = $this->getFixture('dups');
+        $col = new Collection($arr);
+
+        $this->assertEquals('three', $col->keyOf(function($val) {
+            return $val > 2;
+        }));
+
+        $this->assertEquals('zero', $col->keyOf(function($val, $key) {
+            return strlen($key) > 3;
+        }));
+
+        $this->assertEquals('one', $col->keyOf(function($val, $key, $index) {
+            return $index % 2 != 0;
+        }));
     }
 
     /**
