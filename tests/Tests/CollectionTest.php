@@ -34,6 +34,22 @@ class CollectionTest extends TestCase
         $this->assertSame($arr, $col->toArray());
     }
 
+    public function testFactoryAcceptsAnythingToArrayAccepts()
+    {
+        $obj = new Collection([1,2,3]);
+        $iter = new ArrayIterator([3,2,1]);
+        $json = '{"1st":"first","2nd":"second","3rd":"third"}';
+
+        $objcol = Collection::factory($obj);
+        $this->assertSame([1,2,3], $objcol->toArray());
+
+        $itercol = Collection::factory($iter);
+        $this->assertSame([3,2,1], $itercol->toArray());
+
+        $jsoncol = Collection::factory($json);
+        $this->assertSame(['1st' => 'first', '2nd' => 'second', '3rd' => 'third'], $jsoncol->toArray());
+    }
+
     public function testToArrayReturnsItemsAsArray()
     {
         $arr = $this->getFixture('0index');

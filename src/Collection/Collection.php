@@ -21,7 +21,7 @@ use function Noz\is_traversable,
  * @todo Scour Laravel's collection methods for ideas (for instance contains($val, $key) to check key as well as value)
  *       So I did and the following methods look interesting (think about implementing): tap, times, transform, zip?
  *       I also still like the idea of a pairs() method that returns a collection of the collection's key/val pairs as
- *       two-item arrays [key, val]. 
+ *       two-item arrays [key, val].
  */
 class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
 {
@@ -43,15 +43,18 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      * Generate a collection from an array of items.
      * I created this method so that it's possible to extend a collection more easily.
      *
-     * @param array $items
+     * @param mixed $items
      *
      * @todo call to_array on $items and don't require input to be an array.
      *
      * @return Collection
      */
-    public static function factory(array $items = [])
+    public static function factory($items = null)
     {
-        return new Collection($items);
+        if (is_null($items)) {
+            $items = [];
+        }
+        return new Collection(to_array($items));
     }
 
     /**
