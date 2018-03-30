@@ -1,2 +1,2 @@
 # collect
-A really simple collections library for PHP5.3+
+A really simple collections library for PHP5.6+
