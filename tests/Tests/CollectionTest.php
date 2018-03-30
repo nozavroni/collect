@@ -1092,6 +1092,161 @@ class CollectionTest extends TestCase
         $this->assertSame(['fourth','first','second','third'], $col->toArray());
     }
 
+    public function testPadReturnsNewCollectionPaddedToSpecifiedLength()
+    {
+        $arr = $this->getFixture('array');
+        $col = new Collection($arr);
+
+        $padded = $col->pad(5);
+        $this->assertNotSame($col, $padded, "Ensure pad returns new collection");
+        $this->assertSame([
+            'first',
+            'second',
+            'third',
+            null,
+            null
+        ], $padded->toArray(), "Ensure positive pad adds to end");
+
+        $padded = $padded->pad(-8);
+        $this->assertSame([
+            null,
+            null,
+            null,
+            'first',
+            'second',
+            'third',
+            null,
+            null
+        ], $padded->toArray(), "Ensure negative pad adds to beginning and reindexes if indexed numerically");
+    }
+
+    public function testPadPreservesKeysIfNotIndexedNumerically()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection($arr);
+
+        $padded = $col->pad(5);
+        $this->assertSame([
+            '1st' => 'first',
+            '2nd' => 'second',
+            '3rd' => 'third',
+            null,
+            null
+        ], $padded->toArray(), "Ensure keys are preserved in non-numerically indexed arrays");
+
+        $negpadded = $padded->pad(-8);
+        $this->assertSame([
+            null,
+            null,
+            null,
+            '1st' => 'first',
+            '2nd' => 'second',
+            '3rd' => 'third',
+            null,
+            null
+        ], $negpadded->toArray(), "Ensure negative pad adds to beginning and preserves associative keys");
+    }
+
+    public function testPadUsesProvidedValueToPadCollection()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection($arr);
+
+        $padded = $col->pad(5, 'foo');
+        $this->assertSame([
+            '1st' => 'first',
+            '2nd' => 'second',
+            '3rd' => 'third',
+            'foo',
+            'foo'
+        ], $padded->toArray());
+        
+        $negpadded = $padded->pad(-10, 'poo');
+        $this->assertSame([
+            'poo',
+            'poo',
+            'poo',
+            'poo',
+            'poo',
+            '1st' => 'first',
+            '2nd' => 'second',
+            '3rd' => 'third',
+            'foo',
+            'foo'
+        ], $negpadded->toArray());
+    }
+
+    public function testPartitionUsesCallbackToPartitionCollection()
+    {
+        $arr = [];
+        $col = new Collection($arr);
+
+        $partition = $col->partition(function($val, $key, $index) {
+            // do nothing for now...
+        });
+        $this->assertCount(2, $partition);
+        $this->assertInternalType('array', $partition);
+        $this->assertContainsOnlyInstancesOf(Collection::class, $partition);
+    }
+
+    public function testPartitionPutsPassInFirstCollectionAndFailInSecondUsingCallback()
+    {
+        $arr = [1,5,10,-4,0,12,-100,-1,-3,-10];
+        $col = new Collection($arr);
+
+        list($neg, $pos) = $col->partition(function($val, $key, $index) {
+            return $val < 0;
+        });
+        $this->assertSame([
+            3 => -4,
+            6 => -100,
+            7 => -1,
+            8 => -3,
+            9 => -10
+        ], $neg->toArray());
+        $this->assertSame([
+            0 => 1,
+            1 => 5,
+            2 => 10,
+            4 => 0,
+            5 => 12
+        ], $pos->toArray());
+
+        list($even, $odd) = $col->partition(function($val, $key, $index) {
+            return $key % 2 == 0;
+        });
+        $this->assertSame([
+            0 => 1,
+            2 => 10,
+            4 => 0,
+            6 => -100,
+            8 => -3,
+        ], $even->toArray());
+        $this->assertSame([
+            1 => 5,
+            3 => -4,
+            5 => 12,
+            7 => -1,
+            9 => -10
+        ], $odd->toArray());
+
+        list($first, $rest) = $col->partition(function($val, $key, $index) {
+            return !$index;
+        });
+        $this->assertSame([1,], $first->toArray());
+        $this->assertSame([
+            1=>5,
+            2=>10,
+            3=>-4,
+            4=>0,
+            5=>12,
+            6=>-100,
+            7=>-1,
+            8=>-3,
+            9=>-10
+        ], $rest->toArray());
+    }
+
     /** ++++                        ++++ **/
     /** ++ Interface Compliance Tests ++ **/
     /** ++++                        ++++ **/

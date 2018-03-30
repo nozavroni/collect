@@ -19,6 +19,9 @@ use function Noz\is_traversable,
  * @note None of the methods in this class have a $preserveKeys param. That is by design. I don't think it's necessary.
  *       Instead, keys are ALWAYS preserved and if you want to NOT preserve keys, simply call Collection::values().
  * @todo Scour Laravel's collection methods for ideas (for instance contains($val, $key) to check key as well as value)
+ *       So I did and the following methods look interesting (think about implementing): tap, times, transform, zip?
+ *       I also still like the idea of a pairs() method that returns a collection of the collection's key/val pairs as
+ *       two-item arrays [key, val]. 
  */
 class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
 {
@@ -381,6 +384,8 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
 
     /**
      * Get a random value from the collection
+     * 
+     * @todo might be useful to add a $count param to specify you want $count random items...
      *
      * @return mixed
      */
@@ -832,6 +837,60 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
         array_unshift($this->items, $item);
 
         return $this;
+    }
+
+    /**
+     * Get new collection padded to specified $size with $value
+     *
+     * Using $value, pad the collection to specified $size. If $size is smaller or equal to the size of the collection,
+     * then no padding takes place. If $size is positive, padding is added to the end, while if negative, padding will
+     * be added to the beginning.
+     *
+     * @param int $size
+     * @param mixed $value
+     *
+     * @return Collection
+     */
+    public function pad($size, $value = null)
+    {
+        $collection = clone $this;
+        while ($collection->count() < abs($size)) {
+            if ($size > 0) {
+                $collection->add($value);
+            } else {
+                $collection->unshift($value);
+            }
+        }
+
+        return $collection;
+    }
+
+    /**
+     * Partition collection into two collections using a callback
+     *
+     * Iterates over each element in the collection with a callback. Items where callback returns true are placed in one
+     * collection and the rest in another. Finally, the two collections are placed in an array and returned for easy use
+     * with the list() function. ( list($a, $b) = $col->partition(function($val, $key, $index) {}) )
+     *
+     * @param callable $callback
+     *
+     * @return array<Collection>
+     */
+    public function partition(callable $callback)
+    {
+        $pass = static::factory();
+        $fail = static::factory();
+
+        $index = 0;
+        foreach ($this as $key => $val) {
+            if ($callback($val, $key, $index++)) {
+                $pass->set($key, $val);
+            } else {
+                $fail->set($key, $val);
+            }
+        }
+
+        return [$pass, $fail];
     }
 
     /** ++++                  ++++ **/
