@@ -905,6 +905,17 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
         return [$pass, $fail];
     }
 
+    /**
+     * Get column values by key
+     *
+     * This method expects the collection's data to be tabular in nature (two-dimensional and for the rows to have
+     * consistently named keys). If the data is not structured this way, it will do the best it can but it is not meant
+     * for unstructured, non-tabular data so don't expect consistent results.
+     *
+     * @param string|int $column The key of the column you want to get
+     *
+     * @return Collection
+     */
     public function getColumn($column)
     {
         return static::factory(array_column($this->items, $column));
