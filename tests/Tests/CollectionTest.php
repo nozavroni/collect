@@ -1435,4 +1435,49 @@ class CollectionTest extends TestCase
         $col = new Collection($threedim);
         $this->assertSame([[1,2,3], [3,2,1], [4,5,6]], $col->getColumn('foo')->toArray());
     }
+
+    public function testIsTabularChecksIfCollectionIsTwoDimensionalWithConsistentKeys()
+    {
+        // minimum required to be a tabular collection
+        $mintabular = [
+            [],
+        ];
+        $tabular1 = $this->getTestTable();
+        $tabular2 = [
+            [1,2,3],
+            [4,5,6],
+            [7,8,9]
+        ];
+        $tabular3 = [
+            ['one' => 1],
+            ['one' => 2]
+        ];
+        // it is okay for tabular data to contain complex data
+        $tabular4 = [
+            ['one' => [1,2,3], 'two' => [1,2,3,4,5]],
+            ['one' => 2, 'two' => 1],
+            ['one' => true, 'two' => false],
+            ['one' => new \stdClass, 'two' => new \stdClass]
+        ];
+
+        $untabular1 = [
+            ['one' => 1],
+            ['two' => 2]
+        ];
+        $untabular2 = [1,2,3,4];
+        $untabular3 = [
+            [1,2,3,4],
+            [1,2,3,4,5]
+        ];
+
+        $this->assertTrue(Collection::factory($mintabular)->isTabular());
+        $this->assertTrue(Collection::factory($tabular1)->isTabular());
+        $this->assertTrue(Collection::factory($tabular2)->isTabular());
+        $this->assertTrue(Collection::factory($tabular3)->isTabular());
+        $this->assertTrue(Collection::factory($tabular4)->isTabular());
+
+        $this->assertFalse(Collection::factory($untabular1)->isTabular());
+        $this->assertFalse(Collection::factory($untabular2)->isTabular());
+        $this->assertFalse(Collection::factory($untabular3)->isTabular());
+    }
 }

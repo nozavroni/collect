@@ -921,6 +921,28 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
         return static::factory(array_column($this->items, $column));
     }
 
+    /**
+     * Is collection tabular?
+     *
+     * Returns true if the data in the collection is tabular in nature, meaning it is at least two-dimensional and each
+     * row contains the same number of values with the same keys.
+     */
+    public function isTabular()
+    {
+        $first = $this->first();
+        return $this->assert(function($row) use ($first) {
+            try {
+                $first = to_array($first);
+                $row = to_array($row);
+            } catch (RuntimeException $e) {
+                return false;
+            }
+            $diff_amt = count($first) - count($row);
+            $diff_key = array_diff_key($first, $row);
+            return empty($diff_key) && $diff_amt === 0;
+        });
+    }
+
     /** ++++                  ++++ **/
     /** ++ Interface Compliance ++ **/
     /** ++++                  ++++ **/
