@@ -66,6 +66,8 @@ function collect($items)
  * @param mixed $var
  * @param mixed $value
  * @param bool|callable $condition
+ *
+ * @return bool
  */
 function assign_if(&$var, $value, $condition)
 {
@@ -76,3 +78,4 @@ function assign_if(&$var, $value, $condition)
         $var = $value;
     }
 }
+
