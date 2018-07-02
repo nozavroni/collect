@@ -121,19 +121,35 @@ class FunctionsTest extends TestCase
         $this->assertSame([49, 19, 82, 32, 31, 25, 32, 21, 44], $col->getColumn('age')->toArray());
     }
 
-//    public function testGetColumnOnNonTabularData()
-//    {
-//        $nontable = [
-//            'foo',
-//            1,
-//            'boo' => 'far',
-//            [1,2,3,4,5],
-//            'foo' => ['foo' => 'bar', 'boo' => 'far'],
-//            [1 => 2, 3 => 4, 5 => 6],
-//            ['foo' => 'gar', 'boo' => 'rar'],
-//            'FOOBAR!'
-//        ];
-//        $col = new Collection($table);
-//        $this->assertSame([49, 19, 82, 32, 31, 25, 32, 21, 44], $col->getColumn('age'));
-//    }
+    public function testGetColumnOnNonTabularDataDoesTheBestItCan()
+    {
+        $onedim = [1,2,3,4,5];
+        $nontable = [
+            'foo',
+            1,
+            'boo' => 'far',
+            [1,2,3,4,5],
+            'foo' => ['foo' => 'bar', 'boo' => 'far'],
+            [1 => 2, 3 => 4, 5 => 6],
+            ['foo' => 'gar', 'boo' => 'rar'],
+            'FOOBAR!',
+            ['goo' => 'nar', 'boo' => 'har', 'foo' => 'dar', 'doo' => 'lar']
+        ];
+        $c1d = new Collection($onedim);
+        $col = new Collection($nontable);
+        $this->assertSame(['bar', 'gar', 'dar'], $col->getColumn('foo')->toArray());
+        $this->assertSame([2, 2], $col->getColumn(1)->toArray());
+        $this->assertSame([], $c1d->getColumn(1)->toArray());
+    }
+
+    public function testGetColumnWorksOnThreeDimensionalOrMore()
+    {
+        $threedim = [
+            ['foo' => [1,2,3], 'bar' => ['one' => 1, 'two' => 2]],
+            ['foo' => [3,2,1], 'bar' => ['two' => 2, 'three' => 3]],
+            ['foo' => [4,5,6], 'bar' => ['four' => 4, 'two' => 'two']],
+        ];
+        $col = new Collection($threedim);
+        $this->assertSame([[1,2,3], [3,2,1], [4,5,6]], $col->getColumn('foo')->toArray());
+    }
 }
