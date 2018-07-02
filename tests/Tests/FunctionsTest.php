@@ -5,7 +5,8 @@ use ArrayIterator;
 use Noz\Collection\Collection;
 use function Noz\is_traversable,
              Noz\to_array,
-             Noz\collect;
+             Noz\collect,
+             Noz\assign_if;
 use SebastianBergmann\GlobalState\RuntimeException;
 use stdClass;
 
@@ -98,4 +99,46 @@ class FunctionsTest extends TestCase
         $arr = [];
         $this->assertInstanceOf(Collection::class, collect($arr));
     }
+
+    public function testAssignIfAssignsBasedOnConditionUsingNonexistingVariable()
+    {
+        assign_if($var, 10, true);
+        $this->assertSame(10, $var);
+    }
+
+    public function testAssignIfAssignsBasedOnConditionUsingExistingVariable()
+    {
+        $var = 5;
+        assign_if($var, 10, true);
+        $this->assertSame(10, $var);
+    }
+
+    public function testAssignIfDoesNotAssignIfConditionFails()
+    {
+        assign_if($var, 10, false);
+        $this->assertNull($var);
+
+        $var1 = 5;
+        assign_if($var1, 10, false);
+        $this->assertEquals(5, $var1);
+    }
+
+    public function testAssignIfAcceptsNamedFunction()
+    {
+        assign_if($var, $val = 10, 'is_numeric');
+        $this->assertEquals($val, $var);
+
+        assign_if($var1, $val = 'ten', 'is_numeric');
+        $this->assertNotEquals($val, $var1);
+    }
+
+    public function testAssignIfAcceptsAnonymousFunction()
+    {
+        assign_if($var, $val = 10, function($val) { return $val > 5; });
+        $this->assertEquals($val, $var);
+
+        assign_if($var1, $val = 10, function($val) { return $val > 50; });
+        $this->assertNotEquals($val, $var1);
+    }
+
 }

@@ -59,3 +59,20 @@ function collect($items)
 {
     return Collection::factory($items);
 }
+
+/**
+ * Assign a value to a variable if a condition is met
+ *
+ * @param mixed $var
+ * @param mixed $value
+ * @param bool|callable $condition
+ */
+function assign_if(&$var, $value, $condition)
+{
+    if (is_callable($condition)) {
+        $condition = $condition($value);
+    }
+    if ($condition) {
+        $var = $value;
+    }
+}
