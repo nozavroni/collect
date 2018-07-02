@@ -934,8 +934,9 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
             if (!is_traversable(($first)) || !is_traversable($row)) {
                 return false;
             }
-            $row = Collection::factory($row);
-            return $row->kdiff($first)->isEmpty();
+            return Collection::factory($row)
+                ->kdiff($first)
+                ->isEmpty();
         });
     }
 
