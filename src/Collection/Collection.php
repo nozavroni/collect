@@ -931,15 +931,11 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     {
         $first = $this->first();
         return $this->assert(function($row) use ($first) {
-            try {
-                $first = to_array($first);
-                $row = to_array($row);
-            } catch (RuntimeException $e) {
+            if (!is_traversable(($first)) || !is_traversable($row)) {
                 return false;
             }
-            $diff_amt = count($first) - count($row);
-            $diff_key = array_diff_key($first, $row);
-            return empty($diff_key) && $diff_amt === 0;
+            $row = Collection::factory($row);
+            return $row->kdiff($first)->isEmpty();
         });
     }
 
