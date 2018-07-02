@@ -1,6 +1,7 @@
 <?php
 namespace Noz;
 
+use Noz\Collection\Collection;
 use RuntimeException;
 use Traversable;
 
@@ -45,4 +46,16 @@ function to_array($items, $force = false)
     }
 
     throw new RuntimeException(__FUNCTION__ . " could not convert items to an array");
+}
+
+/**
+ * Collection factory function
+ *
+ * @param array|Traversable $items
+ *
+ * @return Collection
+ */
+function collect($items)
+{
+    return Collection::factory($items);
 }

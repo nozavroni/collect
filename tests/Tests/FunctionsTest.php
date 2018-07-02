@@ -4,7 +4,8 @@ namespace Noz\Tests;
 use ArrayIterator;
 use Noz\Collection\Collection;
 use function Noz\is_traversable,
-             Noz\to_array;
+             Noz\to_array,
+             Noz\collect;
 use SebastianBergmann\GlobalState\RuntimeException;
 use stdClass;
 
@@ -90,5 +91,11 @@ class FunctionsTest extends TestCase
     public function testToArrayThrowsExceptionIfCannotConvert()
     {
         to_array(null);
+    }
+
+    public function testCollectCreatesCollection()
+    {
+        $arr = [];
+        $this->assertInstanceOf(Collection::class, collect($arr));
     }
 }
