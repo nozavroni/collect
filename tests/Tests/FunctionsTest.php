@@ -98,4 +98,42 @@ class FunctionsTest extends TestCase
         $arr = [];
         $this->assertInstanceOf(Collection::class, collect($arr));
     }
+
+    protected function getTestTable()
+    {
+        return [
+            ['id' => 10, 'name' => 'Foo Barsen', 'active' => true, 'age' => 49],
+            ['id' => 11, 'name' => 'Fooby McBar', 'active' => false, 'age' => 19],
+            ['id' => 12, 'name' => 'Bar Fooerson', 'active' => true, 'age' => 82],
+            ['id' => 13, 'name' => 'Foobar McFoobar', 'active' => true, 'age' => 32],
+            ['id' => 14, 'name' => 'Foo B. Bar', 'active' => false, 'age' => 31],
+            ['id' => 15, 'name' => 'Barry Fooerston', 'active' => false, 'age' => 25],
+            ['id' => 20, 'name' => 'Fooey Barenstein', 'active' => true, 'age' => 32],
+            ['id' => 34, 'name' => 'Boo Farson', 'active' => true, 'age' => 21],
+            ['id' => 41, 'name' => 'Foobles McBarlot', 'active' => true, 'age' => 44],
+        ];
+    }
+
+    public function testGetColumnReturnsValuesForSpecifiedKey()
+    {
+        $table = $this->getTestTable();
+        $col = new Collection($table);
+        $this->assertSame([49, 19, 82, 32, 31, 25, 32, 21, 44], $col->getColumn('age')->toArray());
+    }
+
+//    public function testGetColumnOnNonTabularData()
+//    {
+//        $nontable = [
+//            'foo',
+//            1,
+//            'boo' => 'far',
+//            [1,2,3,4,5],
+//            'foo' => ['foo' => 'bar', 'boo' => 'far'],
+//            [1 => 2, 3 => 4, 5 => 6],
+//            ['foo' => 'gar', 'boo' => 'rar'],
+//            'FOOBAR!'
+//        ];
+//        $col = new Collection($table);
+//        $this->assertSame([49, 19, 82, 32, 31, 25, 32, 21, 44], $col->getColumn('age'));
+//    }
 }

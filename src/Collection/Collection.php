@@ -905,6 +905,11 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
         return [$pass, $fail];
     }
 
+    public function getColumn($column)
+    {
+        return static::factory(array_column($this->items, $column));
+    }
+
     /** ++++                  ++++ **/
     /** ++ Interface Compliance ++ **/
     /** ++++                  ++++ **/
