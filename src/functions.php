@@ -1,4 +1,13 @@
 <?php
+/**
+ * nozavroni/collect
+ *
+ * This is a basic utility library for PHP5.6+ with special emphesis on Collections.
+ *
+ * @author Luke Visinoni <luke.visinoni@gmail.com>
+ * @copyright (c) 2018 Luke Visinoni <luke.visinoni@gmail.com>
+ * @license MIT (see LICENSE file)
+ */
 namespace Noz;
 
 use Noz\Collection\Collection;
@@ -20,7 +29,8 @@ function is_traversable($value)
 /**
  * Convert $items to an array
  *
- * @param mixed $items
+ * @param mixed $items The var to convert to an array
+ * @param bool $force Force item to array no matter what?
  *
  * @throws RuntimeException if cannot be converted to an array
  *

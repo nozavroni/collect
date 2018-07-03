@@ -114,7 +114,7 @@
                         <ul class="dropdown-menu">
                             <li>
                                 <a href="../reports/errors.html">
-                                                                                                                                                                                                                                                                    <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">11</span>
+                                                                                                                                                                                                                                                                    <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">0</span>
                                 </a>
                             </li>
                             <li>
@@ -144,28 +144,28 @@
                                 <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-414662075"></a>
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-2059361304"></a>
                                 <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
             </div>
-            <div id="namespace-414662075" class="accordion-body collapse in">
+            <div id="namespace-2059361304" class="accordion-body collapse in">
                 <div class="accordion-inner">
 
                                                     <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1826475425"></a>
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1528713950"></a>
                                 <a href="../namespaces/Noz.html" style="margin-left: 30px; padding-left: 0">Noz</a>
             </div>
-            <div id="namespace-1826475425" class="accordion-body collapse ">
+            <div id="namespace-1528713950" class="accordion-body collapse ">
                 <div class="accordion-inner">
 
                                                     <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-963036837"></a>
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-322710137"></a>
                                 <a href="../namespaces/Noz.Collection.html" style="margin-left: 30px; padding-left: 0">Collection</a>
             </div>
-            <div id="namespace-963036837" class="accordion-body collapse ">
+            <div id="namespace-322710137" class="accordion-body collapse ">
                 <div class="accordion-inner">
 
                     
@@ -329,7 +329,7 @@
                         <dt>File</dt>
                             <dd><a href="../files/Collection.Collection.html"><div class="path-wrapper">Collection/Collection.php</div></a></dd>
                                                 <dt>Package</dt>
-                            <dd><div class="namespace-wrapper">Default</div></dd>
+                            <dd><div class="namespace-wrapper">Collection</div></dd>
                                                 <dt>Class hierarchy</dt>
                             <dd class="hierarchy">
                                                                                                                                                                     <div class="namespace-wrapper">\Noz\Collection\Collection</div>
@@ -391,7 +391,7 @@ two-item arrays [key, val].</p>
 
                                 <h4>Type</h4>
                 array
-                                            </article>
+                &mdash; The items for this collection                            </article>
         </div>
         <aside class="span4 detailsbar">
             <h1><i class="icon-arrow-down"></i></h1>
@@ -2392,7 +2392,7 @@ row contains the same number of values with the same keys.</p>
                 <h3 class="public ">jsonSerialize()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
                 <pre class="signature" style="margin-right: 54px;">jsonSerialize() : array</pre>
-                <p><em></em></p>
+                <p><em>JSON serialize</em></p>
                 
 
                 
@@ -2419,21 +2419,23 @@ row contains the same number of values with the same keys.</p>
             <article class="method">
                 <h3 class="public ">offsetExists()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">offsetExists(  <span class="argument">$offset</span>) </pre>
-                <p><em>{@inheritDoc}</em></p>
+                <pre class="signature" style="margin-right: 54px;">offsetExists(mixed  <span class="argument">$offset</span>) : boolean</pre>
+                <p><em>Does offset exist?</em></p>
                 
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
                                                     <tr>
-                                <td></td>
+                                <td>mixed</td>
                                 <td>$offset </td>
                                 <td></td>
                             </tr>
                                             </table>
                 
                 
-                				
+                                    <h4>Returns</h4>
+                    boolean
+                                    				
                             </article>
         </div>
         <aside class="span4 detailsbar">
@@ -2453,21 +2455,23 @@ row contains the same number of values with the same keys.</p>
             <article class="method">
                 <h3 class="public ">offsetGet()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">offsetGet(  <span class="argument">$offset</span>) </pre>
-                <p><em>{@inheritDoc}</em></p>
+                <pre class="signature" style="margin-right: 54px;">offsetGet(mixed  <span class="argument">$offset</span>) : mixed</pre>
+                <p><em>Get item at offset</em></p>
                 
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
                                                     <tr>
-                                <td></td>
+                                <td>mixed</td>
                                 <td>$offset </td>
                                 <td></td>
                             </tr>
                                             </table>
                 
                 
-                				
+                                    <h4>Returns</h4>
+                    mixed
+                                    				
                             </article>
         </div>
         <aside class="span4 detailsbar">
@@ -2487,14 +2491,14 @@ row contains the same number of values with the same keys.</p>
             <article class="method">
                 <h3 class="public ">offsetUnset()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">offsetUnset(  <span class="argument">$offset</span>) </pre>
-                <p><em>{@inheritDoc}</em></p>
+                <pre class="signature" style="margin-right: 54px;">offsetUnset(mixed  <span class="argument">$offset</span>) : void</pre>
+                <p><em>Unset item at offset</em></p>
                 
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
                                                     <tr>
-                                <td></td>
+                                <td>mixed</td>
                                 <td>$offset </td>
                                 <td></td>
                             </tr>
@@ -2521,26 +2525,28 @@ row contains the same number of values with the same keys.</p>
             <article class="method">
                 <h3 class="public ">offsetSet()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">offsetSet(  <span class="argument">$offset</span>,   <span class="argument">$value</span>) </pre>
-                <p><em>{@inheritDoc}</em></p>
+                <pre class="signature" style="margin-right: 54px;">offsetSet(mixed  <span class="argument">$offset</span>, mixed  <span class="argument">$value</span>) : $this</pre>
+                <p><em>Set item at offset</em></p>
                 
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
                                                     <tr>
-                                <td></td>
+                                <td>mixed</td>
                                 <td>$offset </td>
                                 <td></td>
                             </tr>
                                                     <tr>
-                                <td></td>
+                                <td>mixed</td>
                                 <td>$value </td>
                                 <td></td>
                             </tr>
                                             </table>
                 
                 
-                				
+                                    <h4>Returns</h4>
+                    $this
+                                    				
                             </article>
         </div>
         <aside class="span4 detailsbar">
@@ -2767,7 +2773,7 @@ row contains the same number of values with the same keys.</p>
                 <section class="span10 offset1">
                     <hr />
                     Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
-                    on July 2nd, 2018 at 23:47.
+                    on July 3rd, 2018 at 02:58.
                 </section>
             </section>
         </section>

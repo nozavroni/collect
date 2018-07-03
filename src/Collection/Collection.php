@@ -1,4 +1,13 @@
 <?php
+/**
+ * nozavroni/collect
+ *
+ * This is a basic utility library for PHP5.6+ with special emphesis on Collections.
+ *
+ * @author Luke Visinoni <luke.visinoni@gmail.com>
+ * @copyright (c) 2018 Luke Visinoni <luke.visinoni@gmail.com>
+ * @license MIT (see LICENSE file)
+ */
 namespace Noz\Collection;
 
 use Countable;
@@ -25,7 +34,7 @@ use function Noz\is_traversable,
  */
 class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
 {
-    /** @var array */
+    /** @var array The items for this collection */
     protected $items;
 
     /**
@@ -947,6 +956,8 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /** ++++                  ++++ **/
 
     /**
+     * JSON serialize
+     *
      * @return array
      */
     public function jsonSerialize()
@@ -959,7 +970,11 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /** ++++                  ++++ **/
 
     /**
-     * {@inheritDoc}
+     * Does offset exist?
+     *
+     * @param mixed $offset
+     *
+     * @return bool
      */
     public function offsetExists($offset)
     {
@@ -967,7 +982,11 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * {@inheritDoc}
+     * Get item at offset
+     *
+     * @param mixed $offset
+     *
+     * @return mixed
      */
     public function offsetGet($offset)
     {
@@ -979,7 +998,11 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * {@inheritDoc}
+     * Unset item at offset
+     *
+     * @param mixed $offset
+     *
+     * @return void
      */
     public function offsetUnset($offset)
     {
@@ -987,7 +1010,12 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * {@inheritDoc}
+     * Set item at offset
+     *
+     * @param mixed $offset
+     * @param mixed $value
+     *
+     * @return $this
      */
     public function offsetSet($offset, $value)
     {
