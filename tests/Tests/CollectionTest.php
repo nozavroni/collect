@@ -384,7 +384,15 @@ class CollectionTest extends TestCase
         $this->assertEquals('one', $col->keyOf(1));
         $this->assertEquals('two', $col->keyOf(2));
         $this->assertEquals('three', $col->keyOf(3));
-        $this->assertNull($col->keyOf(4));
+    }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testKeyOfThrowsExceptionOnItemNotFound()
+    {
+        $col = Collection::factory(['foo' => 'bar']);
+        $col->keyOf('poo');
     }
 
     public function testKeyOfAcceptsCallback()

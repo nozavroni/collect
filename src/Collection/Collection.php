@@ -158,8 +158,6 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Get the key of the first item found matching $item
      *
-     * @todo should this throw an exception if not found?
-     *
      * @param mixed|callable $item
      *
      * @return mixed|null
@@ -177,7 +175,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
             }
         }
 
-        return null;
+        throw new RuntimeException("No item found at given key: {$item}");
     }
 
     /**
