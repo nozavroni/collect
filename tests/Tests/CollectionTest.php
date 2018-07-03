@@ -355,7 +355,6 @@ class CollectionTest extends TestCase
         $this->assertEquals(1, $col->indexOf(1));
         $this->assertEquals(2, $col->indexOf(2));
         $this->assertEquals(4, $col->indexOf(3));
-        $this->assertNull($col->indexOf(4));
     }
 
     public function testIndexOfAcceptsCallback()
@@ -374,6 +373,15 @@ class CollectionTest extends TestCase
         $this->assertEquals(1, $col->indexOf(function($val, $key, $index) {
             return $index % 2 != 0;
         }));
+    }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testIndexOfThrowsExceptionIfIndexNotFound()
+    {
+        $col = Collection::factory(['test' => 'val', 'foobar']);
+        $col->indexOf('foo');
     }
 
     public function testKeyOfReturnsFirstKeyOfFoundItem()

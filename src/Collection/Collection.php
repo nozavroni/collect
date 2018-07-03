@@ -181,8 +181,6 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Get the offset (index) of the first item found that matches $item
      *
-     * @todo should this throw an exception if not found?
-     *
      * @param mixed|callable $item
      *
      * @return int|null
@@ -203,7 +201,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
             $index++;
         }
 
-        return null;
+        throw new RuntimeException("No key found for given item: {$item}");
     }
 
     /**
