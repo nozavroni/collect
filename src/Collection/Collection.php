@@ -402,8 +402,6 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Get a random value from the collection
      * 
-     * @todo might be useful to add a $count param to specify you want $count random items...
-     *
      * @return mixed
      */
     public function random()
@@ -687,8 +685,6 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Assert callback returns $expected value for each item in collection.
      *
-     * @todo This can be used to easily make methods like all($callback) and none($callback).
-     *
      * @param callable $callback
      * @param bool $expected
      *
@@ -734,9 +730,6 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
 
     /**
      * Get a new collection of $count chunks
-     *
-     * @todo It might be useful to have a method that spreads remainder items more evenly so you don't end up with the
-     *       last item containing only one or two items.
      *
      * @param int $count
      *
@@ -1052,8 +1045,6 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
 
     /**
      * {@inheritDoc}
-     *
-     * @todo Should this return $this?
      */
     public function rewind()
     {
