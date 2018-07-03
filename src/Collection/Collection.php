@@ -926,6 +926,8 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      *
      * Returns true if the data in the collection is tabular in nature, meaning it is at least two-dimensional and each
      * row contains the same number of values with the same keys.
+     *
+     * @return bool
      */
     public function isTabular()
     {

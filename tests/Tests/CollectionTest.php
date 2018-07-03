@@ -1480,4 +1480,5 @@ class CollectionTest extends TestCase
         $this->assertFalse(Collection::factory($untabular2)->isTabular());
         $this->assertFalse(Collection::factory($untabular3)->isTabular());
     }
+
 }
