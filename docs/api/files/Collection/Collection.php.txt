@@ -27,10 +27,8 @@ use function Noz\is_traversable,
  *
  * @note None of the methods in this class have a $preserveKeys param. That is by design. I don't think it's necessary.
  *       Instead, keys are ALWAYS preserved and if you want to NOT preserve keys, simply call Collection::values().
- * @todo Scour Laravel's collection methods for ideas (for instance contains($val, $key) to check key as well as value)
- *       So I did and the following methods look interesting (think about implementing): tap, times, transform, zip?
- *       I also still like the idea of a pairs() method that returns a collection of the collection's key/val pairs as
- *       two-item arrays [key, val].
+ * @note The majority, if not all callback methods in this library accept three arguments; key, value, and index (which
+ *       is simply an incrementing value starting at zero).
  */
 class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
 {
@@ -40,7 +38,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Collection constructor.
      *
-     * @param array $items
+     * @param array $items The items in the collection
      */
     public function __construct(array $items = [])
     {
@@ -52,7 +50,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      * Generate a collection from an array of items.
      * I created this method so that it's possible to extend a collection more easily.
      *
-     * @param mixed $items
+     * @param mixed $items The items in the collection
      *
      * @return Collection
      */
@@ -90,10 +88,10 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      * Does collection have item at position?
      *
      * Determine if collection has an item at a particular position (indexed from one).
-     * Position can be positive and start from the beginning or it can be negative and
-     * start from the end.
      *
-     * @param int $position
+     *
+     * @param int $position Can be positive and start from the beginning or it can be negative and start from the end.
+     *                      Indexed from one (rather than zero).
      *
      * @return bool
      */
@@ -110,12 +108,12 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Get key at given position
      *
-     * Returns the key at the given position, starting from one. Position can be positive (start from beginning) or
-     * negative (start from the end).
+     * Returns the key at the given position, starting from one.
      *
      * If the position does not exist, a RuntimeException is thrown.
      *
-     * @param int $position
+     * @param int $position Can be positive and start from the beginning or it can be negative and start from the end.
+     *                      Indexed from one (rather than zero).
      *
      * @return string
      *
@@ -139,12 +137,12 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Get value at given position
      *
-     * Returns the value at the given position, starting from one. Position can be positive (start from beginning) or
-     * negative (start from the end).
+     * Returns the value at the given position, starting from one.
      *
      * If the position does not exist, a RuntimeException is thrown.
      *
-     * @param int $position
+     * @param int $position Can be positive and start from the beginning or it can be negative and start from the end.
+     *                      Indexed from one (rather than zero).
      *
      * @return mixed
      *
@@ -158,7 +156,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Get the key of the first item found matching $item
      *
-     * @param mixed|callable $item
+     * @param mixed|callable $item The item value to look for
      *
      * @return mixed|null
      */
@@ -181,7 +179,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Get the offset (index) of the first item found that matches $item
      *
-     * @param mixed|callable $item
+     * @param mixed|callable $item The item value to look for
      *
      * @return int|null
      */
@@ -207,8 +205,8 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Get item by key, with an optional default return value
      *
-     * @param mixed $key
-     * @param mixed $default
+     * @param mixed $key The key of the item you want
+     * @param mixed $default A default to return if key does not exist
      *
      * @return mixed
      */
@@ -224,9 +222,11 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Add an item with no regard to key
      *
-     * @param mixed $value
+     * Simply adds a value at the end of the collection. A numeric index will be created automatically.
      *
-     * @return $this
+     * @param mixed $value The value to add to the collection
+     *
+     * @return self
      */
     public function add($value)
     {
@@ -238,11 +238,14 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Set an item at a given key
      *
-     * @param mixed $key
-     * @param mixed $value
+     * Sets the specified key to the specified value. By default the key will be overwritten if it already exists, but
+     * this behavior may be changed by setting the third parameter ($overwrite) to false.
+     *
+     * @param mixed $key The desired key
+     * @param mixed $value The desired value to set the key to
      * @param bool  $overwrite If false, do not overwrite existing key
      *
-     * @return $this
+     * @return self
      */
     public function set($key, $value, $overwrite = true)
     {
@@ -256,9 +259,9 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Delete an item by key
      *
-     * @param mixed $key
+     * @param mixed $key The key whose value you want to delete
      *
-     * @return $this
+     * @return self
      */
     public function delete($key)
     {
@@ -270,7 +273,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Clear the collection of all its items.
      *
-     * @return $this
+     * @return self
      */
     public function clear()
     {
@@ -282,8 +285,13 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Determine if collection contains given value
      *
-     * @param mixed|callable $val
-     * @param mixed $key
+     * Used to determine if the collection contains a given value. Or, for more complex use cases, a callback may be
+     * provided in place of a value, which will be used to determine a match.
+     *
+     * You may also provide a key as the second argument if you wish to match a key as well.
+     *
+     * @param mixed|callable $val The value to search for or a callback used to determine a match
+     * @param mixed $key The (optional) key to match
      *
      * @return bool
      */
@@ -307,9 +315,9 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * Fetch item from collection by key and remove it from collection
+     * Fetch item by key and remove it from the collection
      *
-     * @param mixed $key
+     * @param mixed $key The keyof the value you would like to pull
      *
      * @return mixed
      */
@@ -325,7 +333,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Join collection items using a delimiter
      *
-     * @param string $delim
+     * @param string $delim The character(s) to delimit the results with
      *
      * @return string
      */
@@ -335,7 +343,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * Determine if collection has any items
+     * Determine if collection is empty
      *
      * @return bool
      */
@@ -345,7 +353,9 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * Get a collection of only this collection's values (without its keys)
+     * Get only collection's values
+     *
+     * Return a new collection with only the current collection's values. The keys will be indexed numerically from zero
      *
      * @return Collection
      */
@@ -355,7 +365,10 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * Get a collection of only this collection's keys
+     * Get only collection's keys
+     *
+     * Return a new collection with only the current collection's keys as its values. The new collection's keys will be
+     * indexed numerically from zero.
      *
      * @return Collection
      */
@@ -375,7 +388,9 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * Get a collection with keys and values flipped
+     * Get a collection with keys and values flipped.
+     *
+     * Returns a new collection containing the keys as values and the values as keys.
      *
      * @return Collection
      */
@@ -389,7 +404,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * Shuffle the order of this collection's values
+     * Shuffle (randomize) the order of this collection's values (in-place)
      *
      * @return Collection
      */
@@ -410,11 +425,14 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * Sort the collection (using values)
+     * Sort the collection's values (in-place)
      *
-     * @param callable $alg
+     * Sorts the collection by value using the provided algorithm (which can be either the name of a native php function
+     * or a callable).
      *
-     * @return $this
+     * @param callable $alg The sorting algorithm (defaults to strcmp)
+     *
+     * @return self
      */
     public function sort(callable $alg = null)
     {
@@ -428,11 +446,14 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * Sort the collection (using keys)
+     * Sort the collection's keys (in-place)
      *
-     * @param callable $alg
+     * Sorts the collection by key using the provided algorithm (which can be either the name of a native php function
+     * or a callable).
      *
-     * @return $this
+     * @param callable $alg The sorting algorithm (defaults to strcmp)
+     *
+     * @return self
      */
     public function ksort(callable $alg = null)
     {
@@ -446,11 +467,11 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * Append items to collection without regard to keys
+     * Append items to collection without regard to key
      *
-     * @param array|Traversable $items
+     * @param array|Traversable $items A list of values to append to the collection
      *
-     * @return $this
+     * @return self
      */
     public function append($items)
     {
@@ -468,7 +489,10 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Return first item or first item where callback returns true
      *
-     * @param callable|null $callback
+     * Returns the first item in the collection or, if passed a callback, the first item that causes the callback to
+     * return true.
+     *
+     * @param callable|null $callback A callback to compare items with
      *
      * @return mixed|null
      */
@@ -487,7 +511,10 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Return last item or last item where callback returns true
      *
-     * @param callable|null $callback
+     * Returns the last item in the collection or, if passed a callback, the last item that causes the callback to
+     * return true.
+     *
+     * @param callable|null $callback A callback to compare items with
      *
      * @return mixed|null
      */
@@ -501,7 +528,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      *
      * Create a new collection using the results of a callback function on each item in this collection.
      *
-     * @param callable $callback
+     * @param callable $callback A callback to generate the new values
      *
      * @return Collection
      */
@@ -522,7 +549,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      *
      * Using this collection's keys, and the incoming collection's values, a new collection is created and returned.
      *
-     * @param array|Traversable $items
+     * @param array|Traversable $items The values to combine with this collection's keys
      *
      * @return Collection
      */
@@ -558,7 +585,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * Remove all duplicate values from collection in-place
+     * Remove all duplicate values from collection (in-place)
      *
      * @return Collection
      */
@@ -575,7 +602,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      * The callback accepts value, key, index and should return true if the item should be added to the returned
      * collection
      *
-     * @param callable $callback
+     * @param callable $callback The callback used to filter with
      *
      * @return Collection
      */
@@ -599,13 +626,13 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * Fold collection into a single value
+     * Fold collection into a single value (a.k.a. reduce)
      *
      * Loop through collection calling a callback function and passing the result to the next iteration, eventually
      * returning a single value.
      *
-     * @param callable $callback
-     * @param mixed $initial
+     * @param callable $callback The callback used to "fold" or "reduce" the collection into a single value
+     * @param mixed $initial The (optional) initial value to pass to the callback
      *
      * @return null
      */
@@ -623,7 +650,10 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Return a merge of this collection and $items
      *
-     * @param array|Traversable $items
+     * Returns a new collection with a merge of this collection and $items. Values from $items will overwrite values in
+     * the current collection.
+     *
+     * @param array|Traversable $items The items to merge with the collection
      *
      * @return Collection
      */
@@ -644,7 +674,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Create a new collection with a union of this collection and $items
      *
-     * This method is similar to merge, except that existing items will not be overwritten.
+     * This method is similar to merge, except that existing values will not be overwritten.
      *
      * @param $items
      */
@@ -664,11 +694,12 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
 
     /**
      * Call callback for each item in collection, passively
+     *
      * If at any point the callback returns false, iteration stops.
      *
-     * @param callable $callback
+     * @param callable $callback The callback to use on each item in the collection
      *
-     * @return $this
+     * @return self
      */
     public function each(callable $callback)
     {
@@ -685,8 +716,11 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Assert callback returns $expected value for each item in collection.
      *
-     * @param callable $callback
-     * @param bool $expected
+     * This method will loop over each item in the collection, passing them to the callback. If the callback doesn't
+     * return $expected value for every item in the collection, it will return false.
+     *
+     * @param callable $callback Assertion callback
+     * @param bool $expected Expected value from callback
      *
      * @return bool
      */
@@ -705,7 +739,9 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Pipe collection through a callback
      *
-     * @param callable $callback
+     * Simply passes the collection as an argument to the given callback.
+     *
+     * @param callable $callback The callback function
      *
      * @return mixed
      */
@@ -719,7 +755,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      *
      * Creates a new collection of arrays of $size length. The remainder items will be placed at the end.
      *
-     * @param int $size
+     * @param int $size The size of the arrays you want returned
      *
      * @return Collection
      */
@@ -731,7 +767,9 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Get a new collection of $count chunks
      *
-     * @param int $count
+     * Returns a collection of $count number of equally-sized arrays, placing remainders at the end.
+     *
+     * @param int $count The number of arrays you want returned
      *
      * @return Collection
      */
@@ -743,8 +781,10 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Get a slice of this collection.
      *
-     * @param int $offset
-     * @param int|null $length
+     * Returns a collection with a slice of this collection's items, starting at $offset and continuing until $length
+     *
+     * @param int $offset The offset at which you want the slice to begin
+     * @param int|null $length The length of the slice (number of items)
      *
      * @return Collection
      */
@@ -756,7 +796,9 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Get collection with only differing items
      *
-     * @param array|Traversable $items
+     * Returns a collection containing only the items not present in *both* this collection and $items.
+     *
+     * @param array|Traversable $items The items to compare with
      *
      * @return Collection
      */
@@ -768,7 +810,9 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Get collection with only differing items (by key)
      *
-     * @param array|Traversable $items
+     * Returns a collection containing only the values whose keys are not present in *both* this collection and $items.
+     *
+     * @param array|Traversable $items The items to compare with
      *
      * @return Collection
      */
@@ -780,7 +824,9 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Get collection with only intersecting items
      *
-     * @param array|Traversable $items
+     * Returns a collection containing only the values present in *both* this collection and $items
+     *
+     * @param array|Traversable $items The items to compare with
      *
      * @return Collection
      */
@@ -792,7 +838,9 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Get collection with only intersecting items (by key)
      *
-     * @param array|Traversable $items
+     * Returns a collection containing only the values whose keys are present in *both* this collection and $items
+     *
+     * @param array|Traversable $items The items to compare with
      *
      * @return Collection
      */
@@ -812,7 +860,9 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * Remove first item in collection and return it (and re-index if numerically indexed)
+     * Remove first item in collection and return it
+     *
+     * If the collection is numerically indexed, this method will re-index it from 0 after returning the item.
      *
      * @return mixed
      */
@@ -826,9 +876,9 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      *
      * @note This method is no different than add() but I included it for consistency's sake since I have the others
      *
-     * @param mixed $item
+     * @param mixed $item The item to add to the collection
      *
-     * @return $this
+     * @return self
      */
     public function push($item)
     {
@@ -836,11 +886,13 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * Add item to the beginning of the collection (and re-index if a numerically indexed collection)
+     * Add item to the beginning of the collection
      *
-     * @param mixed $item
+     * The collection will be re-indexed if it has numeric keys.
      *
-     * @return $this
+     * @param mixed $item The item to add to the collection
+     *
+     * @return self
      */
     public function unshift($item)
     {
@@ -856,8 +908,8 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      * then no padding takes place. If $size is positive, padding is added to the end, while if negative, padding will
      * be added to the beginning.
      *
-     * @param int $size
-     * @param mixed $value
+     * @param int $size The number of items collection should have
+     * @param mixed $value The value to pad with
      *
      * @return Collection
      */
@@ -882,7 +934,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      * collection and the rest in another. Finally, the two collections are placed in an array and returned for easy use
      * with the list() function. ( list($a, $b) = $col->partition(function($val, $key, $index) {}) )
      *
-     * @param callable $callback
+     * @param callable $callback The comparison callback
      *
      * @return array<Collection>
      */
@@ -1004,7 +1056,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      * @param mixed $offset
      * @param mixed $value
      *
-     * @return $this
+     * @return self
      */
     public function offsetSet($offset, $value)
     {
@@ -1020,7 +1072,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /** ++++                  ++++ **/
 
     /**
-     * {@inheritDoc}
+     * @ignore
      */
     public function current()
     {
@@ -1028,7 +1080,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * {@inheritDoc}
+     * @ignore
      */
     public function key()
     {
@@ -1036,7 +1088,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * {@inheritDoc}
+     * @ignore
      */
     public function next()
     {
@@ -1044,7 +1096,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * {@inheritDoc}
+     * @ignore
      */
     public function rewind()
     {
@@ -1052,7 +1104,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * {@inheritDoc}
+     * @ignore
      */
     public function valid()
     {
@@ -1064,7 +1116,9 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /** ++++                  ++++ **/
 
     /**
-     * {@inheritDoc}
+     * Get number of items in the collection
+     *
+     * @return int
      */
     public function count()
     {
