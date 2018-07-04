@@ -609,6 +609,15 @@ class CollectionTest extends TestCase
         $this->assertSame(array_keys($arr), $keys->toArray());
     }
 
+    public function testPairsReturnsCollectionOfKeyValuePairs()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection($arr);
+
+        $pairs = $col->pairs();
+        $this->assertSame([['1st', 'first'],['2nd', 'second'],['3rd', 'third']], $pairs->toArray());
+    }
+
     public function testSortDefaultsToAlphabeticalCaseSensitiveOrder()
     {
         $namesarr = $this->getFixture('0index');

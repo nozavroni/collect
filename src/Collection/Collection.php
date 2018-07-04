@@ -378,6 +378,20 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
+     * Get a collection of key/value pairs
+     *
+     * Returns a new collection containing arrays of key/value pairs in the format [key, value].
+     *
+     * @return Collection
+     */
+    public function pairs()
+    {
+        return $this->map(function($val, $key) {
+            return [$key, $val];
+        })->values();
+    }
+
+    /**
      * Get a collection with order reversed
      *
      * @return Collection
