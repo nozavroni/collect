@@ -144,28 +144,28 @@
                                 <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-1890864333"></a>
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-412471699"></a>
                                 <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
             </div>
-            <div id="namespace-1890864333" class="accordion-body collapse in">
+            <div id="namespace-412471699" class="accordion-body collapse in">
                 <div class="accordion-inner">
 
                                                     <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1824463731"></a>
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1991980623"></a>
                                 <a href="../namespaces/Noz.html" style="margin-left: 30px; padding-left: 0">Noz</a>
             </div>
-            <div id="namespace-1824463731" class="accordion-body collapse ">
+            <div id="namespace-1991980623" class="accordion-body collapse ">
                 <div class="accordion-inner">
 
                                                     <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1415695058"></a>
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1813618900"></a>
                                 <a href="../namespaces/Noz.Collection.html" style="margin-left: 30px; padding-left: 0">Collection</a>
             </div>
-            <div id="namespace-1415695058" class="accordion-body collapse ">
+            <div id="namespace-1813618900" class="accordion-body collapse ">
                 <div class="accordion-inner">
 
                     
@@ -244,6 +244,7 @@
                                                                     <a href="../classes/Noz.Collection.Collection.html#method_isEmpty" class="">isEmpty()</a><br />
                                                                     <a href="../classes/Noz.Collection.Collection.html#method_values" class="">values()</a><br />
                                                                     <a href="../classes/Noz.Collection.Collection.html#method_keys" class="">keys()</a><br />
+                                                                    <a href="../classes/Noz.Collection.Collection.html#method_pairs" class="">pairs()</a><br />
                                                                     <a href="../classes/Noz.Collection.Collection.html#method_reverse" class="">reverse()</a><br />
                                                                     <a href="../classes/Noz.Collection.Collection.html#method_flip" class="">flip()</a><br />
                                                                     <a href="../classes/Noz.Collection.Collection.html#method_shuffle" class="">shuffle()</a><br />
@@ -1096,6 +1097,34 @@ provided in place of a value, which will be used to determine a match.</p>
                 <p><em>Get only collection&#039;s keys</em></p>
                 <p>Return a new collection with only the current collection's keys as its values. The new collection's keys will be
 indexed numerically from zero.</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    <a href="../classes/Noz.Collection.Collection.html">\Noz\Collection\Collection</a>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_pairs" name="method_pairs" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">pairs()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">pairs() : \Noz\Collection\Collection</pre>
+                <p><em>Get a collection of key/value pairs</em></p>
+                <p>Returns a new collection containing arrays of key/value pairs in the format [key, value].</p>
 
                 
                 
@@ -2244,7 +2273,7 @@ be added to the beginning.</p>
             <article class="method">
                 <h3 class="public ">partition()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">partition(callable  <span class="argument">$callback</span>) : \Noz\Collection\array&lt;Collection&gt;</pre>
+                <pre class="signature" style="margin-right: 54px;">partition(callable  <span class="argument">$callback</span>) : array&lt;mixed,\Noz\Collection\Collection&gt;</pre>
                 <p><em>Partition collection into two collections using a callback</em></p>
                 <p>Iterates over each element in the collection with a callback. Items where callback returns true are placed in one
 collection and the rest in another. Finally, the two collections are placed in an array and returned for easy use
@@ -2261,7 +2290,7 @@ with the list() function. ( list($a, $b) = $col-&gt;partition(function($val, $ke
                 
                 
                                     <h4>Returns</h4>
-                    \Noz\Collection\array<Collection>
+                    array&lt;mixed,<a href="../classes/Noz.Collection.Collection.html">\Noz\Collection\Collection</a>&gt;
                                     				
                             </article>
         </div>
@@ -2596,7 +2625,7 @@ row contains the same number of values with the same keys.</p>
                 <section class="span10 offset1">
                     <hr />
                     Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
-                    on July 4th, 2018 at 00:40.
+                    on July 4th, 2018 at 01:41.
                 </section>
             </section>
         </section>
