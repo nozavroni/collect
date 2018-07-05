@@ -38,11 +38,11 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Collection constructor.
      *
-     * @param array $items The items in the collection
+     * @param array|Traversable $items The items in the collection
      */
-    public function __construct(array $items = [])
+    public function __construct($items = [])
     {
-        $this->items = $items;
+        $this->items = to_array($items);
         $this->rewind();
     }
 
