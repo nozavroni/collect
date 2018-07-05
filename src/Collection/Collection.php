@@ -37,12 +37,16 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
 
     /**
      * Collection constructor.
+     * 
+     * Although most methods in this class are more forgiving and accept anything that is traversable rather than
+     * strictly an array, the constructor is an exception. It expects an array. If you have an Array-ish object and it 
+     * is traversable, you may use the factory method instead to generate a collection from it.
      *
-     * @param array|Traversable $items The items in the collection
+     * @param array $items The items in the collection
      */
-    public function __construct($items = [])
+    public function __construct(array $items = [])
     {
-        $this->items = to_array($items);
+        $this->items = $items;
         $this->rewind();
     }
 

@@ -18,6 +18,11 @@ class CollectionTest extends TestCase
         $this->assertEquals([], $col->toArray());
     }
 
+    public function testConstructorAcceptsAnythingIterable()
+    {
+
+    }
+
     public function testFactoryReturnsNewEmptyCollection()
     {
         $col = Collection::factory();
