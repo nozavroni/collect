@@ -17,7 +17,8 @@
     },
     "require-dev": {
         "symfony/var-dumper": "^3.1",
-        "phpunit/phpunit": "^5.7"
+        "phpunit/phpunit": "^5.7",
+        "phpdocumentor/phpdocumentor": "2.*"
     },
     "autoload": {
         "psr-4": {

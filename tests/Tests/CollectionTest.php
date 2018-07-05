@@ -4,6 +4,7 @@ namespace Noz\Tests;
 use ArrayIterator;
 use Noz\Collection\Collection;
 use RuntimeException;
+use function Noz\to_array;
 
 /**
  * Collection Tests
@@ -355,7 +356,6 @@ class CollectionTest extends TestCase
         $this->assertEquals(1, $col->indexOf(1));
         $this->assertEquals(2, $col->indexOf(2));
         $this->assertEquals(4, $col->indexOf(3));
-        $this->assertNull($col->indexOf(4));
     }
 
     public function testIndexOfAcceptsCallback()
@@ -376,6 +376,15 @@ class CollectionTest extends TestCase
         }));
     }
 
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testIndexOfThrowsExceptionIfIndexNotFound()
+    {
+        $col = Collection::factory(['test' => 'val', 'foobar']);
+        $col->indexOf('foo');
+    }
+
     public function testKeyOfReturnsFirstKeyOfFoundItem()
     {
         $arr = $this->getFixture('dups');
@@ -384,7 +393,15 @@ class CollectionTest extends TestCase
         $this->assertEquals('one', $col->keyOf(1));
         $this->assertEquals('two', $col->keyOf(2));
         $this->assertEquals('three', $col->keyOf(3));
-        $this->assertNull($col->keyOf(4));
+    }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testKeyOfThrowsExceptionOnItemNotFound()
+    {
+        $col = Collection::factory(['foo' => 'bar']);
+        $col->keyOf('poo');
     }
 
     public function testKeyOfAcceptsCallback()
@@ -591,6 +608,15 @@ class CollectionTest extends TestCase
         $keys = $col->keys();
         $this->assertInstanceOf(Collection::class, $keys);
         $this->assertSame(array_keys($arr), $keys->toArray());
+    }
+
+    public function testPairsReturnsCollectionOfKeyValuePairs()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection($arr);
+
+        $pairs = $col->pairs();
+        $this->assertSame([['1st', 'first'],['2nd', 'second'],['3rd', 'third']], $pairs->toArray());
     }
 
     public function testSortDefaultsToAlphabeticalCaseSensitiveOrder()
@@ -1381,4 +1407,104 @@ class CollectionTest extends TestCase
         $col = new Collection($arr);
         $this->assertEquals($arr, $col->jsonSerialize());
     }
+
+    protected function getTestTable()
+    {
+        return [
+            ['id' => 10, 'name' => 'Foo Barsen', 'active' => true, 'age' => 49],
+            ['id' => 11, 'name' => 'Fooby McBar', 'active' => false, 'age' => 19],
+            ['id' => 12, 'name' => 'Bar Fooerson', 'active' => true, 'age' => 82],
+            ['id' => 13, 'name' => 'Foobar McFoobar', 'active' => true, 'age' => 32],
+            ['id' => 14, 'name' => 'Foo B. Bar', 'active' => false, 'age' => 31],
+            ['id' => 15, 'name' => 'Barry Fooerston', 'active' => false, 'age' => 25],
+            ['id' => 20, 'name' => 'Fooey Barenstein', 'active' => true, 'age' => 32],
+            ['id' => 34, 'name' => 'Boo Farson', 'active' => true, 'age' => 21],
+            ['id' => 41, 'name' => 'Foobles McBarlot', 'active' => true, 'age' => 44],
+        ];
+    }
+
+    public function testGetColumnReturnsValuesForSpecifiedKey()
+    {
+        $table = $this->getTestTable();
+        $col = new Collection($table);
+        $this->assertSame([49, 19, 82, 32, 31, 25, 32, 21, 44], $col->getColumn('age')->toArray());
+    }
+
+    public function testGetColumnOnNonTabularDataDoesTheBestItCan()
+    {
+        $onedim = [1,2,3,4,5];
+        $nontable = [
+            'foo',
+            1,
+            'boo' => 'far',
+            [1,2,3,4,5],
+            'foo' => ['foo' => 'bar', 'boo' => 'far'],
+            [1 => 2, 3 => 4, 5 => 6],
+            ['foo' => 'gar', 'boo' => 'rar'],
+            'FOOBAR!',
+            ['goo' => 'nar', 'boo' => 'har', 'foo' => 'dar', 'doo' => 'lar']
+        ];
+        $c1d = new Collection($onedim);
+        $col = new Collection($nontable);
+        $this->assertSame(['bar', 'gar', 'dar'], $col->getColumn('foo')->toArray());
+        $this->assertSame([2, 2], $col->getColumn(1)->toArray());
+        $this->assertSame([], $c1d->getColumn(1)->toArray());
+    }
+
+    public function testGetColumnWorksOnThreeDimensionalOrMore()
+    {
+        $threedim = [
+            ['foo' => [1,2,3], 'bar' => ['one' => 1, 'two' => 2]],
+            ['foo' => [3,2,1], 'bar' => ['two' => 2, 'three' => 3]],
+            ['foo' => [4,5,6], 'bar' => ['four' => 4, 'two' => 'two']],
+        ];
+        $col = new Collection($threedim);
+        $this->assertSame([[1,2,3], [3,2,1], [4,5,6]], $col->getColumn('foo')->toArray());
+    }
+
+    public function testIsTabularChecksIfCollectionIsTwoDimensionalWithConsistentKeys()
+    {
+        // minimum required to be a tabular collection
+        $mintabular = [
+            [],
+        ];
+        $tabular1 = $this->getTestTable();
+        $tabular2 = [
+            [1,2,3],
+            [4,5,6],
+            [7,8,9]
+        ];
+        $tabular3 = [
+            ['one' => 1],
+            ['one' => 2]
+        ];
+        // it is okay for tabular data to contain complex data
+        $tabular4 = [
+            ['one' => [1,2,3], 'two' => [1,2,3,4,5]],
+            ['one' => 2, 'two' => 1],
+            ['one' => true, 'two' => false],
+            ['one' => new \stdClass, 'two' => new \stdClass]
+        ];
+
+        $untabular1 = [
+            ['one' => 1],
+            ['two' => 2]
+        ];
+        $untabular2 = [1,2,3,4];
+        $untabular3 = [
+            [1,2,3,4],
+            [1,2,3,4,5]
+        ];
+
+        $this->assertTrue(Collection::factory($mintabular)->isTabular());
+        $this->assertTrue(Collection::factory($tabular1)->isTabular());
+        $this->assertTrue(Collection::factory($tabular2)->isTabular());
+        $this->assertTrue(Collection::factory($tabular3)->isTabular());
+        $this->assertTrue(Collection::factory($tabular4)->isTabular());
+
+        $this->assertFalse(Collection::factory($untabular1)->isTabular());
+        $this->assertFalse(Collection::factory($untabular2)->isTabular());
+        $this->assertFalse(Collection::factory($untabular3)->isTabular());
+    }
+
 }
