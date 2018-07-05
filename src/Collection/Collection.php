@@ -27,8 +27,11 @@ use function Noz\is_traversable,
  *
  * @note None of the methods in this class have a $preserveKeys param. That is by design. I don't think it's necessary.
  *       Instead, keys are ALWAYS preserved and if you want to NOT preserve keys, simply call Collection::values().
- * @note The majority, if not all callback methods in this library accept three arguments; key, value, and index (which
- *       is simply an incrementing value starting at zero).
+ *
+ * @note The signature for callbacks throughout this class, unless otherwise stated, will be:
+ *       (mixed $value, mixed $key, int $index), where $index will be simply a numeric value starting at zero, that is
+ *       incremented by one for each successive call to the callback. The other two arguments should be obvious. The
+ *       expected return value will depend on the method for which it is being used.
  */
 class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
 {
@@ -42,7 +45,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      * strictly an array, the constructor is an exception. It expects an array. If you have an Array-ish object and it 
      * is traversable, you may use the factory method instead to generate a collection from it.
      *
-     * @param array $items The items in the collection
+     * @param array $items The items to include in the collection
      */
     public function __construct(array $items = [])
     {
@@ -57,7 +60,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      * necessary. This way, the child class will use its own factory method to generate new collections (or otherwise 
      * use this one).
      *
-     * @param array|Traversable $items The items in the collection
+     * @param array|Traversable $items The items to include in the collection
      *
      * @return Collection
      */
@@ -79,7 +82,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Determine if collection has a given key
      *
-     * @param mixed $key The key to look for
+     * @param mixed $key The key to check for
      *
      * @return bool
      */
@@ -89,13 +92,13 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * Does collection have item at position?
+     * Determine if collection has a value at given position
      *
-     * Determine if collection has an item at a particular position (indexed from one).
+     * If the $position argument is positive, counting will start at the beginning and start from one (rather than zero).
+     * If $position is negative, counting will start at the end and work backwards. This is not the same as array
+     * indexing, as that begins from zero.
      *
-     *
-     * @param int $position Can be positive and start from the beginning or it can be negative and start from the end.
-     *                      Indexed from one (rather than zero).
+     * @param int $position The numeric position to check for a value at
      *
      * @return bool
      */
@@ -112,14 +115,13 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Get key at given position
      *
-     * Returns the key at the given position, starting from one.
+     * If the $position argument is positive, counting will start at the beginning and start from one (rather than zero).
+     * If $position is negative, counting will start at the end and work backwards. If an item exists at the specified
+     * position, its key will be returned. Otherwise a RuntimeException will be thrown.
      *
-     * If the position does not exist, a RuntimeException is thrown.
+     * @param int $position The numeric position to get a key at
      *
-     * @param int $position Can be positive and start from the beginning or it can be negative and start from the end.
-     *                      Indexed from one (rather than zero).
-     *
-     * @return string
+     * @return mixed
      *
      * @throws RuntimeException
      */
@@ -141,12 +143,11 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Get value at given position
      *
-     * Returns the value at the given position, starting from one.
+     * If the $position argument is positive, counting will start at the beginning and start from one (rather than zero).
+     * If $position is negative, counting will start at the end and work backwards. If an item exists at the specified
+     * position, its value will be returned. Otherwise a RuntimeException will be thrown.
      *
-     * If the position does not exist, a RuntimeException is thrown.
-     *
-     * @param int $position Can be positive and start from the beginning or it can be negative and start from the end.
-     *                      Indexed from one (rather than zero).
+     * @param int $position The numeric position to get a value at
      *
      * @return mixed
      *
@@ -158,11 +159,17 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * Get the key of the first item found matching $item
+     * Get the key of first item exactly equal to $item
      *
-     * @param mixed|callable $item The item value to look for
+     * Searches the collection for an item exactly equal to $item, returning its key if found. If a callback is provided
+     * rather than a value, it will be passed the conventional three arguments ($value, $key, $index) and returning true
+     * from this callback would be considered a "match". If no match is found, a RuntimeException will be thrown.
      *
-     * @return mixed|null
+     * @param mixed|callable $item The value to look for or a callback
+     *
+     * @throws RuntimeException
+     *
+     * @return mixed
      */
     public function keyOf($item)
     {
@@ -181,11 +188,18 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * Get the offset (index) of the first item found that matches $item
+     * Get the numeric index of first item exactly equal to $item
      *
-     * @param mixed|callable $item The item value to look for
+     * Searches the collection for an item exactly equal to $item, returning its numeric index if found. If a callback
+     * is provided rather than a value, it will be passed the conventional three arguments ($value, $key, $index) and
+     * returning true from this callback would be considered a "match". If no match is found, a RuntimeException will be
+     * thrown.
      *
-     * @return int|null
+     * @param mixed|callable $item The value to look for or a callback
+     *
+     * @throws RuntimeException
+     *
+     * @return int
      */
     public function indexOf($item)
     {
@@ -203,14 +217,17 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
             $index++;
         }
 
-        throw new RuntimeException("No key found for given item: {$item}");
+        throw new RuntimeException("No item found matching value: {$item}");
     }
 
     /**
-     * Get item by key, with an optional default return value
+     * Get item by key
      *
-     * @param mixed $key The key of the item you want
-     * @param mixed $default A default to return if key does not exist
+     * Fetches an item from the collection by key. If no item is found with the given key, a default may be provided as
+     * the second argument. If no default is provided, null will be returned instead.
+     *
+     * @param mixed $key The key of the item you want returned
+     * @param mixed $default A default value to return if key does not exist
      *
      * @return mixed
      */
@@ -240,14 +257,14 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * Set an item at a given key
+     * Assign a value to the given key
      *
      * Sets the specified key to the specified value. By default the key will be overwritten if it already exists, but
      * this behavior may be changed by setting the third parameter ($overwrite) to false.
      *
-     * @param mixed $key The desired key
-     * @param mixed $value The desired value to set the key to
-     * @param bool  $overwrite If false, do not overwrite existing key
+     * @param mixed $key The key to assign a value to
+     * @param mixed $value The value to assign to $key
+     * @param bool $overwrite Whether to overwrite existing values (default is true)
      *
      * @return self
      */
@@ -263,7 +280,9 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Delete an item by key
      *
-     * @param mixed $key The key whose value you want to delete
+     * Remove the item at the given key from the collection.
+     *
+     * @param mixed $key The key of the item to remove
      *
      * @return self
      */
@@ -275,7 +294,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * Clear the collection of all its items.
+     * Clear (remove) all items from the collection.
      *
      * @return self
      */
@@ -289,27 +308,27 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Determine if collection contains given value
      *
-     * Used to determine if the collection contains a given value. Or, for more complex use cases, a callback may be
-     * provided in place of a value, which will be used to determine a match.
+     * Checks the collection for an item exactly equal to $value. If $value is a callback function, it will be passed
+     * the typical arguments ($value, $key, $index) and a true return value will count as a match.
      *
-     * You may also provide a key as the second argument if you wish to match a key as well.
+     * If $key argument is provided, key must match it as well. By default key is not required.
      *
-     * @param mixed|callable $val The value to search for or a callback used to determine a match
-     * @param mixed $key The (optional) key to match
+     * @param mixed|callable $value The value to check for or a callback function
+     * @param mixed $key The key to check for in addition to the value (optional)
      *
      * @return bool
      */
-    public function contains($val, $key = null)
+    public function contains($value, $key = null)
     {
         $index = 0;
         foreach ($this as $k => $v) {
             $matchkey = is_null($key) || $key === $k;
-            if (is_callable($val)) {
-                if ($val($v, $k, $index)) {
+            if (is_callable($value)) {
+                if ($value($v, $k, $index)) {
                     return $matchkey;
                 }
             } else {
-                if ($val === $v) {
+                if ($value === $v) {
                     return $matchkey;
                 }
             }
@@ -319,9 +338,9 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * Fetch item by key and remove it from the collection
+     * Pull an item out of the collection and return it
      *
-     * @param mixed $key The keyof the value you would like to pull
+     * @param mixed $key The key whose value should be removed and returned
      *
      * @return mixed
      */
@@ -337,7 +356,10 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Join collection items using a delimiter
      *
-     * @param string $delim The character(s) to delimit the results with
+     * Similar to implode() or join(), this method will attempt to return every item in the collection  delimited
+     * (separated) by the specified character(s).
+     *
+     * @param string $delim The character(s) to delimit (separate) the results with
      *
      * @return string
      */
@@ -347,7 +369,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * Determine if collection is empty
+     * Determine if collection is empty (has no items)
      *
      * @return bool
      */
@@ -357,7 +379,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * Get only collection's values
+     * Get new collection with only values
      *
      * Return a new collection with only the current collection's values. The keys will be indexed numerically from zero
      *
@@ -369,10 +391,9 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * Get only collection's keys
+     * Get new collection with only keys
      *
-     * Return a new collection with only the current collection's keys as its values. The new collection's keys will be
-     * indexed numerically from zero.
+     * Return a new collection with only the current collection's keys as its values.
      *
      * @return Collection
      */
@@ -443,10 +464,15 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * Sort the collection's values (in-place)
+     * Sort the collection by value (in-place)
      *
      * Sorts the collection by value using the provided algorithm (which can be either the name of a native php function
      * or a callable).
+     *
+     * @note The sorting methods are exceptions to the usual callback signature. The callback for this method accepts
+     *       the standard arguments for sorting algorithms ( string $str1 , string $str2 ) and should return an integer.
+     *
+     * @see http://php.net/manual/en/function.strcmp.php
      *
      * @param callable $alg The sorting algorithm (defaults to strcmp)
      *
@@ -464,10 +490,15 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * Sort the collection's keys (in-place)
+     * Sort the collection by key (in-place)
      *
      * Sorts the collection by key using the provided algorithm (which can be either the name of a native php function
      * or a callable).
+     *
+     * @note The sorting methods are exceptions to the usual callback signature. The callback for this method accepts
+     *       the standard arguments for sorting algorithms ( string $str1 , string $str2 ) and should return an integer.
+     *
+     * @see http://php.net/manual/en/function.strcmp.php
      *
      * @param callable $alg The sorting algorithm (defaults to strcmp)
      *
@@ -486,6 +517,8 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
 
     /**
      * Append items to collection without regard to key
+     *
+     * Much like Collection::add(), except that it accepts multiple items to append rather than just one.
      *
      * @param array|Traversable $items A list of values to append to the collection
      *
@@ -507,10 +540,10 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Return first item or first item where callback returns true
      *
-     * Returns the first item in the collection or, if passed a callback, the first item that causes the callback to
-     * return true.
+     * Returns the first item in the collection. If a callback is provided, it will accept the standard arguments
+     * ($value, $key, $index) and returning true will be considered a "match".
      *
-     * @param callable|null $callback A callback to compare items with
+     * @param callable|null $callback A callback to compare items with (optional)
      *
      * @return mixed|null
      */
@@ -529,10 +562,10 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Return last item or last item where callback returns true
      *
-     * Returns the last item in the collection or, if passed a callback, the last item that causes the callback to
-     * return true.
+     * Returns the last item in the collection. If a callback is provided, it will accept the standard arguments
+     * ($value, $key, $index) and returning true will be considered a "match".
      *
-     * @param callable|null $callback A callback to compare items with
+     * @param callable|null $callback A callback to compare items with (optional)
      *
      * @return mixed|null
      */
@@ -542,11 +575,15 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * Map collection
+     * Create a new collection by applying a callback to each item in the collection
      *
-     * Create a new collection using the results of a callback function on each item in this collection.
+     * The callback for this method should accept the standard arguments ($value, $key, $index). It will be called once
+     * for every item in the collection and a new collection will be created with the results.
      *
-     * @param callable $callback A callback to generate the new values
+     * @note It is worth noting that keys will be preserved in the resulting collection, so if you do not want this
+     *       behavior, simply call values() on the resulting collection and it will be indexed numerically.
+     *
+     * @param callable $callback A callback that is applied to every item in the collection
      *
      * @return Collection
      */
@@ -563,7 +600,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * Combine collection with another traversable/collection
+     * Combine collection with another collection/array/traversable
      *
      * Using this collection's keys, and the incoming collection's values, a new collection is created and returned.
      *
@@ -615,12 +652,13 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * Return a new collection with only filtered keys/values
+     * Get new collection with only filtered values
      *
-     * The callback accepts value, key, index and should return true if the item should be added to the returned
-     * collection
+     * Loops through every item in the collection, applying the given callback and creating a new collection with only
+     * those items which return true from the callback. The callback should accept the standard arguments
+     * ($value, $key, $index). If no callback is provided, items with "truthy" values will be kept.
      *
-     * @param callable $callback The callback used to filter with
+     * @param callable $callback A callback function used to determine which items are kept (optional)
      *
      * @return Collection
      */
@@ -646,13 +684,14 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Fold collection into a single value (a.k.a. reduce)
      *
-     * Loop through collection calling a callback function and passing the result to the next iteration, eventually
-     * returning a single value.
+     * Apply a callback function to each item in the collection, passing the result to the next call until only a single
+     * value remains. The arguments provided to this callback are ($folded, $val, $key, $index) where $folded is the
+     * result of the previous call (or if the first call it is equal to the $initial param).
      *
-     * @param callable $callback The callback used to "fold" or "reduce" the collection into a single value
+     * @param callable $callback The callback function used to "fold" or "reduce" the collection into a single value
      * @param mixed $initial The (optional) initial value to pass to the callback
      *
-     * @return null
+     * @return mixed
      */
     public function fold(callable $callback, $initial = null)
     {
@@ -711,9 +750,9 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * Call callback for each item in collection, passively
+     * Apply a callback function to each item in the collection passively
      *
-     * If at any point the callback returns false, iteration stops.
+     * To stop looping through the items in the collection, return false from the callback.
      *
      * @param callable $callback The callback to use on each item in the collection
      *
@@ -759,7 +798,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      *
      * Simply passes the collection as an argument to the given callback.
      *
-     * @param callable $callback The callback function
+     * @param callable $callback The callback function (passed only one arg, the collection itself)
      *
      * @return mixed
      */
@@ -950,7 +989,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      *
      * Iterates over each element in the collection with a callback. Items where callback returns true are placed in one
      * collection and the rest in another. Finally, the two collections are placed in an array and returned for easy use
-     * with the list() function. ( list($a, $b) = $col->partition(function($val, $key, $index) {}) )
+     * with the list() function. ( `list($a, $b) = $col->partition(function($val, $key, $index) {})` )
      *
      * @param callable $callback The comparison callback
      *
@@ -1017,6 +1056,8 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * JSON serialize
      *
+     * @ignore
+     *
      * @return array
      */
     public function jsonSerialize()
@@ -1031,6 +1072,8 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Does offset exist?
      *
+     * @ignore
+     *
      * @param mixed $offset
      *
      * @return bool
@@ -1042,6 +1085,8 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
 
     /**
      * Get item at offset
+     *
+     * @ignore
      *
      * @param mixed $offset
      *
@@ -1059,6 +1104,8 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Unset item at offset
      *
+     * @ignore
+     *
      * @param mixed $offset
      *
      * @return void
@@ -1070,6 +1117,8 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
 
     /**
      * Set item at offset
+     *
+     * @ignore
      *
      * @param mixed $offset
      * @param mixed $value
