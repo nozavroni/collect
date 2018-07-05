@@ -4,6 +4,7 @@ namespace Noz\Tests;
 use ArrayIterator;
 use Noz\Collection\Collection;
 use RuntimeException;
+use function Noz\to_array;
 
 /**
  * Collection Tests
@@ -16,11 +17,6 @@ class CollectionTest extends TestCase
 
         $this->assertInstanceOf(Collection::class, $col);
         $this->assertEquals([], $col->toArray());
-    }
-
-    public function testConstructorAcceptsAnythingIterable()
-    {
-
     }
 
     public function testFactoryReturnsNewEmptyCollection()

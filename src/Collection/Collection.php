@@ -51,19 +51,19 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * Generate a collection from an array of items.
-     * I created this method so that it's possible to extend a collection more easily.
+     * Generate a collection from any iterable
      *
-     * @param mixed $items The items in the collection
+     * This is the method used internally to generate new collections. This allows for this class to be extended if 
+     * necessary. This way, the child class will use its own factory method to generate new collections (or otherwise 
+     * use this one).
+     *
+     * @param array|Traversable $items The items in the collection
      *
      * @return Collection
      */
     public static function factory($items = null)
     {
-        if (is_null($items)) {
-            $items = [];
-        }
-        return new Collection(to_array($items));
+        return new Collection(to_array($items, true));
     }
 
     /**
