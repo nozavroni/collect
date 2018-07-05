@@ -5,4 +5,4 @@
 # collect
 A really simple collections library for PHP5.6+
 
-For API docs, check out the docs folder. There auto-generated HTML API docs available in there.
+For API docs, check out the docs folder. There are auto-generated HTML API docs available in there. They are also available on my website here: http://visinoni.net/nozavroni/collect/docs/api/
