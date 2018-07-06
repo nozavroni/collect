@@ -217,7 +217,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
             $index++;
         }
 
-        throw new RuntimeException("No item found matching value: {$item}");
+        throw new RuntimeException("Could not find item equal to '{$item}'");
     }
 
     /**
