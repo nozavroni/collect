@@ -1466,6 +1466,12 @@ class CollectionTest extends TestCase
         $this->assertSame(0, $col->average());
     }
 
+    public function testMedianReturnsMedianOfAllNumericItems()
+    {
+        $col = new Collection([10,10,12,13,15,15,16,17,18,18,20]);
+        $this->assertSame(15, $col->median());
+    }
+
     protected function getTestTable()
     {
         return [

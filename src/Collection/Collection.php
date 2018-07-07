@@ -1044,6 +1044,22 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
         return $numeric->sum() / $count;
     }
 
+    public function median()
+    {
+        $numeric = $this->filter(function($val) {
+            return is_numeric($val);
+        })->sort();
+        if (!$count = $numeric->count()) {
+            return 0;
+        }
+        $pos = ($count + 1) / 2;
+        return $pos;
+//        if ($count % 2) {
+//            return $numeric->getValueAt();
+//        }
+        // evenn
+    }
+
     /**
      * Get column values by key
      *
