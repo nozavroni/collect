@@ -1408,6 +1408,28 @@ class CollectionTest extends TestCase
         $this->assertEquals($arr, $col->jsonSerialize());
     }
 
+    public function testSumReturnsSumOfAllNumericItemsInCollection()
+    {
+        $col = new Collection([1,2,3,4,5,6,7,8,9,10]);
+        $this->assertEquals(55, $col->sum());
+    }
+
+    public function testSumSimplyIgnoresNonNumericItems()
+    {
+        $col = new Collection([
+            1, // = 1
+            new \stdClass, // = 0
+            [1,2,3,'foo'], // = 0
+            'foo', // = 0
+            false, // = 0
+            true, // = 1
+            'foobar', // = 0
+            'ten', // = 0
+            '5' // = 5
+        ]);
+        $this->assertEquals(7, $col->sum());
+    }
+
     protected function getTestTable()
     {
         return [

@@ -1013,6 +1013,18 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
+     * Get sum of all items
+     *
+     * Returns the sum of all numeric items in the collection.
+     *
+     * @return int
+     */
+    public function sum()
+    {
+        return array_sum($this->items);
+    }
+
+    /**
      * Get column values by key
      *
      * This method expects the collection's data to be tabular in nature (two-dimensional and for the rows to have
