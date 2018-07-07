@@ -1015,13 +1015,33 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Get sum of all items
      *
-     * Returns the sum of all numeric items in the collection.
+     * Returns the sum of all numeric items in the collection, silently ignoring any non-numeric values.
      *
      * @return int
      */
     public function sum()
     {
-        return array_sum($this->items);
+        return $this->fold(function($accum, $val) {
+            return is_numeric($val) ? $accum + $val : $accum;
+        }, 0);
+    }
+
+    /**
+     * Get average of all items
+     *
+     * Returns the average of all numeric items in the collection, silently ignoring any non-numeric values.
+     *
+     * @return float|int
+     */
+    public function average()
+    {
+        $numeric = $this->filter(function($val) {
+            return is_numeric($val);
+        });
+        if (!$count = $numeric->count()) {
+            return 0;
+        }
+        return $numeric->sum() / $count;
     }
 
     /**
