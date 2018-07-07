@@ -89,3 +89,19 @@ function assign_if(&$var, $value, $condition)
     }
 }
 
+/**
+ * Get numeric value of any variable
+ *
+ * Pass any string, int or float and this will convert it to its appropriate int or float value.
+ *
+ * @param mixed $val Variable you want the numeric value of
+ *
+ * @return int
+ */
+function to_numeric($val)
+{
+    if (is_numeric($val)) {
+        return $val + 0;
+    }
+    return 0;
+}

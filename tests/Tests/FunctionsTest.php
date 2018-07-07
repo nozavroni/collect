@@ -6,7 +6,8 @@ use Noz\Collection\Collection;
 use function Noz\is_traversable,
              Noz\to_array,
              Noz\collect,
-             Noz\assign_if;
+             Noz\assign_if,
+             Noz\to_numeric;
 use SebastianBergmann\GlobalState\RuntimeException;
 use stdClass;
 
@@ -139,6 +140,15 @@ class FunctionsTest extends TestCase
 
         assign_if($var1, $val = 10, function($val) { return $val > 50; });
         $this->assertNotEquals($val, $var1);
+    }
+
+    public function testToNumericReturnsNumericValueOfStrings()
+    {
+        $this->assertSame(1, to_numeric('1'));
+        $this->assertSame(0, to_numeric(true));
+        $this->assertSame(1.0, to_numeric('1.0'));
+        $this->assertSame(1.1, to_numeric('1.1'));
+        $this->assertSame(0, to_numeric('0'));
     }
 
 }
