@@ -18,7 +18,8 @@ use RuntimeException;
 use Traversable;
 
 use function Noz\is_traversable,
-             Noz\to_array;
+             Noz\to_array,
+             Noz\to_numeric;
 
 /**
  * Nozavroni Collection
@@ -654,8 +655,8 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     /**
      * Get frequency of each distinct item in collection
      *
-     * Returns a new collection with each distinct scalar value as its keys and the number if times it occurs in the
-     * collection (its frequency) as its values. Non-scalar values will simply be discarded.
+     * Returns a new collection with each distinct scalar value converted to a string as its keys and the number if
+     * times it occurs in the collection (its frequency) as its values. Non-scalar values will simply be discarded.
      *
      * @return Collection
      */
@@ -663,10 +664,11 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     {
         return $this->fold(function(Collection $freq, $val) {
             if (is_scalar($val)) {
-                if (!isset($freq[$val])) {
-                    $freq[$val] = 0;
+                $str = (string) $val;
+                if (!isset($freq[$str])) {
+                    $freq[$str] = 0;
                 }
-                $freq[$val] += 1;
+                $freq[$str] += 1;
             }
             return $freq;
         }, new Collection);
@@ -1085,6 +1087,26 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
             return ($numeric->getValueAt(floor($pos)) + $numeric->getValueAt(ceil($pos))) / 2;
         }
         return $numeric->getValueAt($pos);
+    }
+
+    /**
+     * Get the mode numeric value
+     *
+     * Returns the mode of all numeric items in the collection, silently ignoring any non-numeric values.
+     *
+     * @return float|int
+     */
+    public function mode()
+    {
+        $mode = $this->filter(function($val) {
+            return is_numeric($val);
+            })
+            ->frequency()
+            ->sort()
+            ->keys()
+            ->pop();
+
+        return to_numeric($mode);
     }
 
     /**

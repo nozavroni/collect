@@ -201,11 +201,11 @@ class CollectionTest extends TestCase
             'a', 'a', 'a', 'a', 'a',
             'g', 'g', 'h', 'g', 'g',
             'a', 'b', 'c', 'b', 'a',
-            true, false, true, false, true
+            1.5, 2.23, 1.5, '1', 100.3849587
         ]);
         $this->assertSame([
-            0 => 3,
-            1 => 7,
+            0 => 1,
+            1 => 5,
             10 => 3,
             11 => 2,
             'a' => 12,
@@ -215,7 +215,10 @@ class CollectionTest extends TestCase
             'e' => 1,
             'f' => 1,
             'g' => 4,
-            'h' => 1
+            'h' => 1,
+            '1.5' => 2,
+            '2.23' => 1,
+            '100.3849587' => 1
         ], $col->frequency()->toArray());
     }
 
@@ -1535,6 +1538,48 @@ class CollectionTest extends TestCase
     {
         $col = new Collection();
         $this->assertSame(0, $col->median());
+    }
+
+    public function testModeReturnsModeOfAllNumericItems()
+    {
+        $col = new Collection([
+            1.1,
+            1.2,
+            4,
+            5,
+            4,
+            5,
+            1.1,
+            1,
+            0,
+            0,
+            1,
+            5,
+            6,
+            1.1,
+            1.1
+        ]);
+        $this->assertSame(1.1, $col->mode());
+    }
+
+    public function testModeSimplyIgnoresNonNumericItems()
+    {
+        $col = new Collection([
+            1, // = 1
+            new \stdClass, // = 0
+            [1,2,3,'foo'], // = 0
+            'foo', // = 0
+            false, // = 0
+            2,
+            5,
+            true, // = 0
+            'foobar', // = 0
+            'ten', // = 0
+            '5', // = 5
+            1.1,
+            'a','a','a','a','a','a'
+        ]);
+        $this->assertEquals(5, $col->mode());
     }
 
     protected function getTestTable()
