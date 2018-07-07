@@ -874,6 +874,25 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
+     * Zip together any number of arrays/traversables
+     *
+     * Merges together the values from this collection with the values of each of the provided traversables at the
+     * corresponding index. So [1,2,3] + [4,5,6] + [7,8,9] would end up [[1,4,7], [2,5,8], [3,6,9]].
+     *
+     * @param array|Traversable ...$items The collections/arrays to zip
+     *
+     * @return Collection
+     */
+    public function zip(...$items)
+    {
+        $args = [null, $this->items];
+        foreach ($items as $x) {
+            $args[] = to_array($x);
+        }
+        return static::factory(call_user_func_array('array_map', $args));
+    }
+
+    /**
      * Get collection with only differing items
      *
      * Returns a collection containing only the items not present in *both* this collection and $items.

@@ -1116,6 +1116,21 @@ class CollectionTest extends TestCase
         ], $col->slice(-10, -3)->toArray(), "Slice should be able to start at a negative position and go to a negative length");
     }
 
+    public function testZipReturnsCollectionOfZippedArrays()
+    {
+        $arr1 = ['a','b','c'];
+        $arr2 = [1, 2, 3];
+        $arr3 = new Collection(['X', 'Y', 'Z']);
+        $arr4 = [9];
+
+        $col = new Collection($arr1);
+        $this->assertSame([
+            ['a',1,'X',9],
+            ['b',2,'Y',null],
+            ['c',3,'Z',null]
+        ], $col->zip($arr2, $arr3, $arr4)->toArray());
+    }
+
     public function testDiffReturnsCollectionContainingOnlyDifferingItems()
     {
         $arr = $this->getFixture('array');
