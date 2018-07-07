@@ -893,6 +893,18 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
+     * Get every n-th item from the collection
+     *
+     * @param int $n Get every $n-th item
+     */
+    public function nth($n)
+    {
+        return $this->filter(function($val, $key, $index) use ($n) {
+            return ($index+1) % $n == 0;
+        });
+    }
+
+    /**
      * Get collection with only differing items
      *
      * Returns a collection containing only the items not present in *both* this collection and $items.

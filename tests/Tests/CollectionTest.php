@@ -1131,6 +1131,14 @@ class CollectionTest extends TestCase
         ], $col->zip($arr2, $arr3, $arr4)->toArray());
     }
 
+    public function testNthReturnsEveryNthItemInCollection()
+    {
+        $col = new Collection([1,2,3,4,5,6,7,8,9,10]);
+        $this->assertEquals([3,6,9], $col->nth(3)->values()->toArray());
+        $this->assertEquals([2,4,6,8,10], $col->nth(2)->values()->toArray());
+        $this->assertEquals([4,8], $col->nth(4)->values()->toArray());
+    }
+
     public function testDiffReturnsCollectionContainingOnlyDifferingItems()
     {
         $arr = $this->getFixture('array');
