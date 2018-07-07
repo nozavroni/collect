@@ -1082,7 +1082,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
         if (!is_int($pos)) {
             return ($numeric->getValueAt(floor($pos)) + $numeric->getValueAt(ceil($pos))) / 2;
         }
-        return $numeric->getValueAt($pos);
+        return to_numeric($numeric->getValueAt($pos));
     }
 
     /**
@@ -1101,6 +1101,30 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
             ->pop();
 
         return to_numeric($mode);
+    }
+
+    /**
+     * Get maximum numeric value from collection
+     *
+     * Returns the max of all numeric items in the collection, silently ignoring any non-numeric values.
+     *
+     * @return float|int
+     */
+    public function max()
+    {
+        return to_numeric(max($this->items));
+    }
+
+    /**
+     * Get minimum numeric value from collection
+     *
+     * Returns the min of all numeric items in the collection, silently ignoring any non-numeric values.
+     *
+     * @return float|int
+     */
+    public function min()
+    {
+        return to_numeric(min($this->items));
     }
 
     /**

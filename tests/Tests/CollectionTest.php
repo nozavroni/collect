@@ -1579,7 +1579,56 @@ class CollectionTest extends TestCase
             1.1,
             'a','a','a','a','a','a'
         ]);
-        $this->assertEquals(5, $col->mode());
+        $this->assertSame(5, $col->mode());
+    }
+
+    public function testModeReturnsZeroForEmptyCollection()
+    {
+        $this->assertSame(0, (new Collection)->mode());
+    }
+
+    public function testMaxReturnsHighestNumberInCollection()
+    {
+        $col = new Collection([
+            1.1,
+            1.2,
+            4,
+            5,
+            4,
+            5,
+            1.1,
+            1,
+            '0',
+            '0',
+            1,
+            5,
+            '6',
+            1.1,
+            1.1
+        ]);
+        $this->assertSame(6, $col->max());
+    }
+
+    public function testMinReturnsLowestNumberInCollection()
+    {
+        $col = new Collection([
+            1.1,
+            1.2,
+            4,
+            5,
+            4,
+            5,
+            1.1,
+            1,
+            '0',
+            '0',
+            1,
+            5,
+            '6',
+            1.1,
+            1.1
+        ]);
+        $this->assertSame(0, $col->min());
     }
 
     protected function getTestTable()
