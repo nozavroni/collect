@@ -652,6 +652,27 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
+     * Get frequency of each distinct item in collection
+     *
+     * Returns a new collection with each distinct scalar value as its keys and the number if times it occurs in the
+     * collection (its frequency) as its values. Non-scalar values will simply be discarded.
+     *
+     * @return Collection
+     */
+    public function frequency()
+    {
+        return $this->fold(function(Collection $freq, $val) {
+            if (is_scalar($val)) {
+                if (!isset($freq[$val])) {
+                    $freq[$val] = 0;
+                }
+                $freq[$val] += 1;
+            }
+            return $freq;
+        }, new Collection);
+    }
+
+    /**
      * Get new collection with only filtered values
      *
      * Loops through every item in the collection, applying the given callback and creating a new collection with only

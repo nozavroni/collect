@@ -191,6 +191,44 @@ class CollectionTest extends TestCase
         ], $col->toArray());
     }
 
+    public function testFrequencyCountsEachScalarItemInCollection()
+    {
+        $col = new Collection([
+            0, 1, 1, 1, 10,
+            10, 11, 1, 10, 11,
+            'a', 'a', 'a', 'a', 'a',
+            'b', 'c', 'd', 'e', 'f',
+            'a', 'a', 'a', 'a', 'a',
+            'g', 'g', 'h', 'g', 'g',
+            'a', 'b', 'c', 'b', 'a',
+            true, false, true, false, true
+        ]);
+        $this->assertSame([
+            0 => 3,
+            1 => 7,
+            10 => 3,
+            11 => 2,
+            'a' => 12,
+            'b' => 3,
+            'c' => 2,
+            'd' => 1,
+            'e' => 1,
+            'f' => 1,
+            'g' => 4,
+            'h' => 1
+        ], $col->frequency()->toArray());
+    }
+
+    public function testFrequencySilentlyDiscardsNonScalarValues()
+    {
+        $col = new Collection([new \stdClass, [1,2,3], 1, 2, 3, 1, 2, 1, new \stdClass]);
+        $this->assertSame([
+            1 => 3,
+            2 => 2,
+            3 => 1
+        ], $col->frequency()->toArray());
+    }
+
     public function testFilterKeepsOnlyItemsPassingTest()
     {
         $arr = $this->getFixture('numwords');
