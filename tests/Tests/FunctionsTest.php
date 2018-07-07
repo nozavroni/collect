@@ -6,7 +6,9 @@ use Noz\Collection\Collection;
 use function Noz\is_traversable,
              Noz\to_array,
              Noz\collect,
-             Noz\assign_if;
+             Noz\assign_if,
+             Noz\to_numeric,
+             Noz\is_numeric;
 use SebastianBergmann\GlobalState\RuntimeException;
 use stdClass;
 
@@ -139,6 +141,29 @@ class FunctionsTest extends TestCase
 
         assign_if($var1, $val = 10, function($val) { return $val > 50; });
         $this->assertNotEquals($val, $var1);
+    }
+
+    public function testToNumericReturnsNumericValueOfStrings()
+    {
+        $this->assertSame(1, to_numeric('1'));
+        $this->assertSame(0, to_numeric(true));
+        $this->assertSame(1.0, to_numeric('1.0'));
+        $this->assertSame(1.1, to_numeric('1.1'));
+        $this->assertSame(0, to_numeric('0'));
+    }
+
+    public function testIsNumericIsAliasOfPhpIsNumeric()
+    {
+        $this->assertTrue(is_numeric('1'));
+        $this->assertTrue(is_numeric('1.1'));
+        $this->assertTrue(is_numeric('100'));
+        $this->assertTrue(is_numeric('0.000001'));
+        $this->assertTrue(is_numeric(100));
+        $this->assertFalse(is_numeric('foo'));
+        $this->assertFalse(is_numeric(''));
+        $this->assertFalse(is_numeric(false));
+        $this->assertFalse(is_numeric(true));
+        $this->assertFalse(is_numeric(new \stdClass));
     }
 
 }

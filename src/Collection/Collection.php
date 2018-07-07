@@ -18,7 +18,8 @@ use RuntimeException;
 use Traversable;
 
 use function Noz\is_traversable,
-             Noz\to_array;
+             Noz\to_array,
+             Noz\to_numeric;
 
 /**
  * Nozavroni Collection
@@ -184,7 +185,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
             }
         }
 
-        throw new RuntimeException("No item found at given key: {$item}");
+        throw new RuntimeException("Could not find item equal to '{$item}'");
     }
 
     /**
@@ -217,7 +218,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
             $index++;
         }
 
-        throw new RuntimeException("No item found matching value: {$item}");
+        throw new RuntimeException("Could not find item equal to '{$item}'");
     }
 
     /**
@@ -652,6 +653,28 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
+     * Get frequency of each distinct item in collection
+     *
+     * Returns a new collection with each distinct scalar value converted to a string as its keys and the number if
+     * times it occurs in the collection (its frequency) as its values. Non-scalar values will simply be discarded.
+     *
+     * @return Collection
+     */
+    public function frequency()
+    {
+        return $this->fold(function(Collection $freq, $val) {
+            if (is_scalar($val)) {
+                $str = (string) $val;
+                if (!isset($freq[$str])) {
+                    $freq[$str] = 0;
+                }
+                $freq[$str] += 1;
+            }
+            return $freq;
+        }, new Collection);
+    }
+
+    /**
      * Get new collection with only filtered values
      *
      * Loops through every item in the collection, applying the given callback and creating a new collection with only
@@ -851,6 +874,37 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
+     * Zip together any number of arrays/traversables
+     *
+     * Merges together the values from this collection with the values of each of the provided traversables at the
+     * corresponding index. So [1,2,3] + [4,5,6] + [7,8,9] would end up [[1,4,7], [2,5,8], [3,6,9]].
+     *
+     * @param array|Traversable ...$items The collections/arrays to zip
+     *
+     * @return Collection
+     */
+    public function zip(...$items)
+    {
+        $args = [null, $this->items];
+        foreach ($items as $x) {
+            $args[] = to_array($x);
+        }
+        return static::factory(call_user_func_array('array_map', $args));
+    }
+
+    /**
+     * Get every n-th item from the collection
+     *
+     * @param int $n Get every $n-th item
+     */
+    public function nth($n)
+    {
+        return $this->filter(function($val, $key, $index) use ($n) {
+            return ($index+1) % $n == 0;
+        });
+    }
+
+    /**
      * Get collection with only differing items
      *
      * Returns a collection containing only the items not present in *both* this collection and $items.
@@ -1010,6 +1064,115 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
         }
 
         return [$pass, $fail];
+    }
+
+    /**
+     * Get sum of all numeric items
+     *
+     * Returns the sum of all numeric items in the collection, silently ignoring any non-numeric values.
+     *
+     * @return float|int
+     */
+    public function sum()
+    {
+        return $this->fold(function($accum, $val) {
+            return is_numeric($val) ? $accum + $val : $accum;
+        }, 0);
+    }
+
+    /**
+     * Get product of all numeric items
+     *
+     * Returns the product of all numeric items in the collection, silently ignoring any non-numeric values.
+     *
+     * @return float|int
+     */
+    public function product()
+    {
+        if ($this->isEmpty()) {
+            return 0;
+        }
+        return $this->fold(function($accum, $val) {
+            return is_numeric($val) ? $accum * $val : $accum;
+        }, 1);
+    }
+
+    /**
+     * Get average of all numeric items
+     *
+     * Returns the average of all numeric items in the collection, silently ignoring any non-numeric values.
+     *
+     * @return float|int
+     */
+    public function average()
+    {
+        $numeric = $this->filter('Noz\is_numeric');
+        if (!$count = $numeric->count()) {
+            return 0;
+        }
+        return $numeric->sum() / $count;
+    }
+
+    /**
+     * Get the median numeric value
+     *
+     * Returns the median of all numeric items in the collection, silently ignoring any non-numeric values.
+     *
+     * @return float|int
+     */
+    public function median()
+    {
+        $numeric = $this->filter('Noz\is_numeric')->sort();
+        if (!$count = $numeric->count()) {
+            return 0;
+        }
+        $pos = ($count + 1) / 2;
+        if (!is_int($pos)) {
+            return ($numeric->getValueAt(floor($pos)) + $numeric->getValueAt(ceil($pos))) / 2;
+        }
+        return to_numeric($numeric->getValueAt($pos));
+    }
+
+    /**
+     * Get the mode numeric value
+     *
+     * Returns the mode of all numeric items in the collection, silently ignoring any non-numeric values.
+     *
+     * @return float|int
+     */
+    public function mode()
+    {
+        $mode = $this->filter('Noz\is_numeric')
+            ->frequency()
+            ->sort()
+            ->keys()
+            ->pop();
+
+        return to_numeric($mode);
+    }
+
+    /**
+     * Get maximum numeric value from collection
+     *
+     * Returns the max of all numeric items in the collection, silently ignoring any non-numeric values.
+     *
+     * @return float|int
+     */
+    public function max()
+    {
+        return to_numeric(max($this->items));
+    }
+
+    /**
+     * Get minimum numeric value from collection
+     *
+     * Returns the min of all numeric items in the collection, silently ignoring any non-numeric values.
+     *
+     * @return float|int
+     */
+    public function min()
+    {
+        return to_numeric(min($this->items));
     }
 
     /**

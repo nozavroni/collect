@@ -191,6 +191,47 @@ class CollectionTest extends TestCase
         ], $col->toArray());
     }
 
+    public function testFrequencyCountsEachScalarItemInCollection()
+    {
+        $col = new Collection([
+            0, 1, 1, 1, 10,
+            10, 11, 1, 10, 11,
+            'a', 'a', 'a', 'a', 'a',
+            'b', 'c', 'd', 'e', 'f',
+            'a', 'a', 'a', 'a', 'a',
+            'g', 'g', 'h', 'g', 'g',
+            'a', 'b', 'c', 'b', 'a',
+            1.5, 2.23, 1.5, '1', 100.3849587
+        ]);
+        $this->assertSame([
+            0 => 1,
+            1 => 5,
+            10 => 3,
+            11 => 2,
+            'a' => 12,
+            'b' => 3,
+            'c' => 2,
+            'd' => 1,
+            'e' => 1,
+            'f' => 1,
+            'g' => 4,
+            'h' => 1,
+            '1.5' => 2,
+            '2.23' => 1,
+            '100.3849587' => 1
+        ], $col->frequency()->toArray());
+    }
+
+    public function testFrequencySilentlyDiscardsNonScalarValues()
+    {
+        $col = new Collection([new \stdClass, [1,2,3], 1, 2, 3, 1, 2, 1, new \stdClass]);
+        $this->assertSame([
+            1 => 3,
+            2 => 2,
+            3 => 1
+        ], $col->frequency()->toArray());
+    }
+
     public function testFilterKeepsOnlyItemsPassingTest()
     {
         $arr = $this->getFixture('numwords');
@@ -1075,6 +1116,29 @@ class CollectionTest extends TestCase
         ], $col->slice(-10, -3)->toArray(), "Slice should be able to start at a negative position and go to a negative length");
     }
 
+    public function testZipReturnsCollectionOfZippedArrays()
+    {
+        $arr1 = ['a','b','c'];
+        $arr2 = [1, 2, 3];
+        $arr3 = new Collection(['X', 'Y', 'Z']);
+        $arr4 = [9];
+
+        $col = new Collection($arr1);
+        $this->assertSame([
+            ['a',1,'X',9],
+            ['b',2,'Y',null],
+            ['c',3,'Z',null]
+        ], $col->zip($arr2, $arr3, $arr4)->toArray());
+    }
+
+    public function testNthReturnsEveryNthItemInCollection()
+    {
+        $col = new Collection([1,2,3,4,5,6,7,8,9,10]);
+        $this->assertEquals([3,6,9], $col->nth(3)->values()->toArray());
+        $this->assertEquals([2,4,6,8,10], $col->nth(2)->values()->toArray());
+        $this->assertEquals([4,8], $col->nth(4)->values()->toArray());
+    }
+
     public function testDiffReturnsCollectionContainingOnlyDifferingItems()
     {
         $arr = $this->getFixture('array');
@@ -1406,6 +1470,217 @@ class CollectionTest extends TestCase
         $arr = $this->getFixture('assoc');
         $col = new Collection($arr);
         $this->assertEquals($arr, $col->jsonSerialize());
+    }
+
+    public function testSumReturnsSumOfAllNumericItemsInCollection()
+    {
+        $col = new Collection([1,2,3,4,5,6,7,8,9,10]);
+        $this->assertEquals(55, $col->sum());
+    }
+
+    public function testSumSimplyIgnoresNonNumericItems()
+    {
+        $col = new Collection([
+            1, // = 1
+            new \stdClass, // = 0
+            [1,2,3,'foo'], // = 0
+            'foo', // = 0
+            false, // = 0
+            true, // = 0
+            'foobar', // = 0
+            'ten', // = 0
+            '5' // = 5
+        ]);
+        // 1 + 5 = 6
+        $this->assertEquals(6, $col->sum());
+    }
+
+    public function testSumReturnsZeroForEmptyCollection()
+    {
+        $col = new Collection();
+        $this->assertSame(0, $col->sum());
+    }
+
+    public function testProductReturnsProductOfAllNumericItems()
+    {
+        $col = new Collection(range(1,10));
+        $this->assertSame(3628800, $col->product());
+    }
+
+    public function testProductReturnsZeroIfEmptyCollection()
+    {
+        $col = new Collection();
+        $this->assertSame(0, $col->product());
+    }
+
+    public function testProductSimplyIgnoresNonNumericItems()
+    {
+        $col = new Collection([
+            1, // = 1
+            new \stdClass, // = 0
+            [1,2,3,'foo'], // = 0
+            'foo', // = 0
+            false, // = 0
+            true, // = 0
+            'foobar', // = 0
+            'ten', // = 0
+            '5' // = 5
+        ]);
+        // 6 / 2 = 3
+        $this->assertSame(5, $col->product());
+    }
+
+    public function testAverageReturnsAverageOfAllNumericItemsInCollection()
+    {
+        $col = new Collection([1,2,3,4,5,6,7,8,9,10]);
+        $this->assertEquals(5.5, $col->average());
+    }
+
+    public function testAverageSimplyIgnoresNonNumericItems()
+    {
+        $col = new Collection([
+            1, // = 1
+            new \stdClass, // = 0
+            [1,2,3,'foo'], // = 0
+            'foo', // = 0
+            false, // = 0
+            true, // = 0
+            'foobar', // = 0
+            'ten', // = 0
+            '5' // = 5
+        ]);
+        // 6 / 2 = 3
+        $this->assertEquals(3, $col->average());
+    }
+
+    public function testAverageReturnsZeroForEmptyCollection()
+    {
+        $col = new Collection();
+        $this->assertSame(0, $col->average());
+    }
+
+    public function testMedianReturnsMedianOfAllNumericItems()
+    {
+        $col = new Collection([25, 10, 12, 31, 55, 15, 16, 57, 18, 18, 25]);
+        $this->assertSame(18, $col->median());
+        $col->add(30);
+        $this->assertSame(21.5, $col->median());
+    }
+
+    public function testMedianSimplyIgnoresNonNumericItems()
+    {
+        $col = new Collection([
+            1, // = 1
+            new \stdClass, // = 0
+            [1,2,3,'foo'], // = 0
+            'foo', // = 0
+            false, // = 0
+            2,
+            5,
+            true, // = 0
+            'foobar', // = 0
+            'ten', // = 0
+            '5' // = 5
+        ]);
+        // 6 / 2 = 3
+        $this->assertEquals(3.5, $col->median());
+    }
+
+    public function testMedianReturnsZeroForEmptyCollection()
+    {
+        $col = new Collection();
+        $this->assertSame(0, $col->median());
+    }
+
+    public function testModeReturnsModeOfAllNumericItems()
+    {
+        $col = new Collection([
+            1.1,
+            1.2,
+            4,
+            5,
+            4,
+            5,
+            1.1,
+            1,
+            0,
+            0,
+            1,
+            5,
+            6,
+            1.1,
+            1.1
+        ]);
+        $this->assertSame(1.1, $col->mode());
+    }
+
+    public function testModeSimplyIgnoresNonNumericItems()
+    {
+        $col = new Collection([
+            1, // = 1
+            new \stdClass, // = 0
+            [1,2,3,'foo'], // = 0
+            'foo', // = 0
+            false, // = 0
+            2,
+            5,
+            true, // = 0
+            'foobar', // = 0
+            'ten', // = 0
+            '5', // = 5
+            1.1,
+            'a','a','a','a','a','a'
+        ]);
+        $this->assertSame(5, $col->mode());
+    }
+
+    public function testModeReturnsZeroForEmptyCollection()
+    {
+        $this->assertSame(0, (new Collection)->mode());
+    }
+
+    public function testMaxReturnsHighestNumberInCollection()
+    {
+        $col = new Collection([
+            1.1,
+            1.2,
+            4,
+            5,
+            4,
+            5,
+            1.1,
+            1,
+            '0',
+            '0',
+            1,
+            5,
+            '6',
+            1.1,
+            1.1
+        ]);
+        $this->assertSame(6, $col->max());
+    }
+
+    public function testMinReturnsLowestNumberInCollection()
+    {
+        $col = new Collection([
+            1.1,
+            1.2,
+            4,
+            5,
+            4,
+            5,
+            1.1,
+            1,
+            '0',
+            '0',
+            1,
+            5,
+            '6',
+            1.1,
+            1.1
+        ]);
+        $this->assertSame(0, $col->min());
     }
 
     protected function getTestTable()

@@ -89,4 +89,34 @@ function assign_if(&$var, $value, $condition)
     }
 }
 
+/**
+ * Get numeric value of any variable
+ *
+ * Pass any string, int or float and this will convert it to its appropriate int or float value.
+ *
+ * @param mixed $val Variable you want the numeric value of
+ *
+ * @return int
+ */
+function to_numeric($val)
+{
+    if (is_numeric($val)) {
+        return $val + 0;
+    }
+    return 0;
+}
 
+/**
+ * Check if a variable is numeric
+ *
+ * Unfortunately I cannot pass "is_numeric" as a callback because it only accepts one parameter. So I have created this
+ * alias in order to be able to pass it as a callback.
+ *
+ * @param mixed $val The value to check
+ *
+ * @return bool
+ */
+function is_numeric($val)
+{
+    return \is_numeric($val);
+}
