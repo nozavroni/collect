@@ -1478,6 +1478,35 @@ class CollectionTest extends TestCase
         $this->assertSame(0, $col->sum());
     }
 
+    public function testProductReturnsProductOfAllNumericItems()
+    {
+        $col = new Collection(range(1,10));
+        $this->assertSame(3628800, $col->product());
+    }
+
+    public function testProductReturnsZeroIfEmptyCollection()
+    {
+        $col = new Collection();
+        $this->assertSame(0, $col->product());
+    }
+
+    public function testProductSimplyIgnoresNonNumericItems()
+    {
+        $col = new Collection([
+            1, // = 1
+            new \stdClass, // = 0
+            [1,2,3,'foo'], // = 0
+            'foo', // = 0
+            false, // = 0
+            true, // = 0
+            'foobar', // = 0
+            'ten', // = 0
+            '5' // = 5
+        ]);
+        // 6 / 2 = 3
+        $this->assertSame(5, $col->product());
+    }
+
     public function testAverageReturnsAverageOfAllNumericItemsInCollection()
     {
         $col = new Collection([1,2,3,4,5,6,7,8,9,10]);

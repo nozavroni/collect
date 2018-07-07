@@ -1040,13 +1040,30 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      *
      * Returns the sum of all numeric items in the collection, silently ignoring any non-numeric values.
      *
-     * @return int
+     * @return float|int
      */
     public function sum()
     {
         return $this->fold(function($accum, $val) {
             return is_numeric($val) ? $accum + $val : $accum;
         }, 0);
+    }
+
+    /**
+     * Get product of all numeric items
+     *
+     * Returns the product of all numeric items in the collection, silently ignoring any non-numeric values.
+     *
+     * @return float|int
+     */
+    public function product()
+    {
+        if ($this->isEmpty()) {
+            return 0;
+        }
+        return $this->fold(function($accum, $val) {
+            return is_numeric($val) ? $accum * $val : $accum;
+        }, 1);
     }
 
     /**
