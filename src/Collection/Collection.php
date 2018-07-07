@@ -1013,7 +1013,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * Get sum of all items
+     * Get sum of all numeric items
      *
      * Returns the sum of all numeric items in the collection, silently ignoring any non-numeric values.
      *
@@ -1027,7 +1027,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * Get average of all items
+     * Get average of all numeric items
      *
      * Returns the average of all numeric items in the collection, silently ignoring any non-numeric values.
      *
@@ -1044,6 +1044,13 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
         return $numeric->sum() / $count;
     }
 
+    /**
+     * Get the median numeric value
+     *
+     * Returns the median of all numeric items in the collection, silently ignoring any non-numeric values.
+     *
+     * @return float|int
+     */
     public function median()
     {
         $numeric = $this->filter(function($val) {
@@ -1053,11 +1060,10 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
             return 0;
         }
         $pos = ($count + 1) / 2;
-        return $pos;
-//        if ($count % 2) {
-//            return $numeric->getValueAt();
-//        }
-        // evenn
+        if (!is_int($pos)) {
+            return ($numeric->getValueAt(floor($pos)) + $numeric->getValueAt(ceil($pos))) / 2;
+        }
+        return $numeric->getValueAt($pos);
     }
 
     /**

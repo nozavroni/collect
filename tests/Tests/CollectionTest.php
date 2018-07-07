@@ -1468,8 +1468,35 @@ class CollectionTest extends TestCase
 
     public function testMedianReturnsMedianOfAllNumericItems()
     {
-        $col = new Collection([10,10,12,13,15,15,16,17,18,18,20]);
-        $this->assertSame(15, $col->median());
+        $col = new Collection([25, 10, 12, 31, 55, 15, 16, 57, 18, 18, 25]);
+        $this->assertSame(18, $col->median());
+        $col->add(30);
+        $this->assertSame(21.5, $col->median());
+    }
+
+    public function testMedianSimplyIgnoresNonNumericItems()
+    {
+        $col = new Collection([
+            1, // = 1
+            new \stdClass, // = 0
+            [1,2,3,'foo'], // = 0
+            'foo', // = 0
+            false, // = 0
+            2,
+            5,
+            true, // = 0
+            'foobar', // = 0
+            'ten', // = 0
+            '5' // = 5
+        ]);
+        // 6 / 2 = 3
+        $this->assertEquals(3.5, $col->median());
+    }
+
+    public function testMedianReturnsZeroForEmptyCollection()
+    {
+        $col = new Collection();
+        $this->assertSame(0, $col->median());
     }
 
     protected function getTestTable()
