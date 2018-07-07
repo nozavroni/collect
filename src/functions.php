@@ -105,3 +105,18 @@ function to_numeric($val)
     }
     return 0;
 }
+
+/**
+ * Check if a variable is numeric
+ *
+ * Unfortunately I cannot pass "is_numeric" as a callback because it only accepts one parameter. So I have created this
+ * alias in order to be able to pass it as a callback.
+ *
+ * @param mixed $val The value to check
+ *
+ * @return bool
+ */
+function is_numeric($val)
+{
+    return \is_numeric($val);
+}

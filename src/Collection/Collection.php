@@ -1058,9 +1058,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      */
     public function average()
     {
-        $numeric = $this->filter(function($val) {
-            return is_numeric($val);
-        });
+        $numeric = $this->filter('Noz\is_numeric');
         if (!$count = $numeric->count()) {
             return 0;
         }
@@ -1076,9 +1074,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      */
     public function median()
     {
-        $numeric = $this->filter(function($val) {
-            return is_numeric($val);
-        })->sort();
+        $numeric = $this->filter('Noz\is_numeric')->sort();
         if (!$count = $numeric->count()) {
             return 0;
         }
@@ -1098,9 +1094,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      */
     public function mode()
     {
-        $mode = $this->filter(function($val) {
-            return is_numeric($val);
-            })
+        $mode = $this->filter('Noz\is_numeric')
             ->frequency()
             ->sort()
             ->keys()
