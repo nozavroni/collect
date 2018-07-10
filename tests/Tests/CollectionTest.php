@@ -756,15 +756,15 @@ class CollectionTest extends TestCase
 
         $case = new Collection(array_flip(['Ag', 'AA', 'aa', 'BA', 'AB', 'a0', 0, 1, '0bs']));
         $this->assertSame([
-            0 => 6,
             '0bs' => 8,
-            1 => 7,
             'AA' => 1,
             'AB' => 4,
             'Ag' => 0,
             'BA' => 3,
             'a0' => 5,
-            'aa' => 2
+            'aa' => 2,
+            0 => 6,
+            1 => 7
         ], $case->ksort()->toArray());
     }
 
@@ -786,6 +786,34 @@ class CollectionTest extends TestCase
             }
             return strlen($a) - strlen($b);
         })->toArray());
+    }
+
+    public function testKsortHandlesNumericalSortingProperly()
+    {
+        $col = new Collection([
+            10 => 'a',
+            1  => 'b',
+            20 => 'c',
+            2  => 'd',
+            '11' => 'e',
+            '10.01' => 'f',
+            '10.10' => 'g',
+            100 => 'h',
+            500 => 'i',
+            5 => 'j',
+        ]);
+        $this->assertSame([
+            1 => 'b',
+            2 => 'd',
+            5 => 'j',
+            10 => 'a',
+            '10.01' => 'f',
+            '10.10' => 'g',
+            11 => 'e',
+            20 => 'c',
+            100 => 'h',
+            500 => 'i'
+        ], $col->ksort()->toArray());
     }
 
     public function testAppendAddsArrayToCollectionWithoutRegardToKey()
