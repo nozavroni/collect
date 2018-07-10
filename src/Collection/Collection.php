@@ -483,9 +483,10 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     {
         if (is_null($alg)) {
             // case-sensitive string comparison is the default sorting mechanism
-            $alg = 'strcmp';
+            asort($this->items);
+        } else {
+            uasort($this->items, $alg);
         }
-        uasort($this->items, $alg);
 
         return $this;
     }
