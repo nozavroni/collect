@@ -681,15 +681,15 @@ class CollectionTest extends TestCase
 
         $case = new Collection($arr = ['Ag', 'AA', 'aa', 'BA', 'AB', 'a0', 0, 1, '0bs']);
         $this->assertSame([
+            6 => 0,
             8 => '0bs',
+            7 => 1,
             1 => 'AA',
             4 => 'AB',
             0 => 'Ag',
             3 => 'BA',
             5 => 'a0',
             2 => 'aa',
-            6 => 0,
-            7 => 1,
         ], $case->sort()->toArray());
     }
 
@@ -756,15 +756,15 @@ class CollectionTest extends TestCase
 
         $case = new Collection(array_flip(['Ag', 'AA', 'aa', 'BA', 'AB', 'a0', 0, 1, '0bs']));
         $this->assertSame([
+            0 => 6,
             '0bs' => 8,
+            1 => 7,
             'AA' => 1,
             'AB' => 4,
             'Ag' => 0,
             'BA' => 3,
             'a0' => 5,
             'aa' => 2,
-            0 => 6,
-            1 => 7
         ], $case->ksort()->toArray());
     }
 

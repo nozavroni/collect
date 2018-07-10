@@ -482,7 +482,8 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     public function sort(callable $alg = null)
     {
         if (is_null($alg)) {
-            asort($this->items);
+            $flag = $this->assert('Noz\is_numeric') ? SORT_NUMERIC : SORT_NATURAL;
+            asort($this->items, $flag);
         } else {
             uasort($this->items, $alg);
         }
@@ -508,7 +509,8 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     public function ksort(callable $alg = null)
     {
         if (is_null($alg)) {
-            ksort($this->items);
+            $flag = $this->keys()->assert('Noz\is_numeric') ? SORT_NUMERIC : SORT_NATURAL;
+            ksort($this->items, $flag);
         } else {
             uksort($this->items, $alg);
         }
