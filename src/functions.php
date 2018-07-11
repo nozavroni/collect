@@ -65,7 +65,7 @@ function to_array($items, $force = false)
  *
  * @return Collection
  */
-function collect($items)
+function collect($items = [])
 {
     return Collection::factory($items);
 }

@@ -669,14 +669,14 @@ class CollectionTest extends TestCase
             0 => 'zero',
             1 => 'one',
             2 => 'two',
-            3 => 'three'
+            3 => 'three',
         ], $names->toArray());
 
         $this->assertSame([
             1 => 'one',
             3 => 'three',
             2 => 'two',
-            0 => 'zero'
+            0 => 'zero',
         ], $names->sort()->toArray());
 
         $case = new Collection($arr = ['Ag', 'AA', 'aa', 'BA', 'AB', 'a0', 0, 1, '0bs']);
@@ -689,7 +689,7 @@ class CollectionTest extends TestCase
             0 => 'Ag',
             3 => 'BA',
             5 => 'a0',
-            2 => 'aa'
+            2 => 'aa',
         ], $case->sort()->toArray());
     }
 
@@ -721,6 +721,27 @@ class CollectionTest extends TestCase
         })->toArray());
     }
 
+    public function testSortHandlesNumericValuesProperly()
+    {
+        $col = new Collection([25,5,10,1,2,'01','14',15,115,'0101','1.256',15.557,15.559,16]);
+        $this->assertSame([
+            3 => 1,
+            5 => '01',
+            10 => '1.256',
+            4 => 2,
+            1 => 5,
+            2 => 10,
+            6 => '14',
+            7 => 15,
+            11 => 15.557,
+            12 => 15.559,
+            13 => 16,
+            0 => 25,
+            9 => '0101',
+            8 => 115
+        ], $col->sort()->toArray());
+    }
+
     public function testKSortDefaultsToAlphabeticalCaseSensitiveOrder()
     {
         $namesarr = array_flip($this->getFixture('0index'));
@@ -743,7 +764,7 @@ class CollectionTest extends TestCase
             'Ag' => 0,
             'BA' => 3,
             'a0' => 5,
-            'aa' => 2
+            'aa' => 2,
         ], $case->ksort()->toArray());
     }
 
@@ -765,6 +786,34 @@ class CollectionTest extends TestCase
             }
             return strlen($a) - strlen($b);
         })->toArray());
+    }
+
+    public function testKsortHandlesNumericalSortingProperly()
+    {
+        $col = new Collection([
+            10 => 'a',
+            1  => 'b',
+            20 => 'c',
+            2  => 'd',
+            '11' => 'e',
+            '10.01' => 'f',
+            '10.10' => 'g',
+            100 => 'h',
+            500 => 'i',
+            5 => 'j',
+        ]);
+        $this->assertSame([
+            1 => 'b',
+            2 => 'd',
+            5 => 'j',
+            10 => 'a',
+            '10.01' => 'f',
+            '10.10' => 'g',
+            11 => 'e',
+            20 => 'c',
+            100 => 'h',
+            500 => 'i'
+        ], $col->ksort()->toArray());
     }
 
     public function testAppendAddsArrayToCollectionWithoutRegardToKey()

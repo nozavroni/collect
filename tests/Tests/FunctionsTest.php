@@ -96,6 +96,11 @@ class FunctionsTest extends TestCase
         to_array(null);
     }
 
+    public function testCollectAllowsNoArgs()
+    {
+        $this->assertInstanceOf(Collection::class, collect());
+    }
+
     public function testCollectCreatesCollection()
     {
         $arr = [];
