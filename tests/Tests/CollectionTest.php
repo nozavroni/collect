@@ -171,6 +171,18 @@ class CollectionTest extends TestCase
         $this->assertSame($col, $col->shuffle());
     }
 
+    public function testShufflePreservesKeys()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection ($arr);
+
+        $keys = $col->keys()->toArray();
+        $shuffled = $col->shuffle()->toArray();
+        foreach ($keys as $k) {
+            $this->assertArrayHasKey($k, $shuffled);
+        }
+    }
+
     /**
      * Not really sure how to test this method...
      */

@@ -450,7 +450,14 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      */
     public function shuffle()
     {
-        shuffle($this->items);
+        $new = [];
+        $keys = array_keys($this->items);
+        shuffle($keys);
+        foreach ($keys as $key) {
+            $new[$key] = $this->items[$key];
+        }
+        $this->items = $new;
+
         return $this;
     }
 
