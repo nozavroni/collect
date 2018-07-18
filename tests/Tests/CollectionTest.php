@@ -360,6 +360,22 @@ class CollectionTest extends TestCase
         }, 'init'), 'Initial value passed in should be the first value of $accum');
     }
 
+    public function testRecollectWorksLikeFoldButAlwaysReturnsANewCollection()
+    {
+        $col = new Collection(range(1,5));
+
+        $new = $col->recollect(function(Collection $accum, $val, $key, $i) {
+            return $accum->add(sprintf("%s-%s-%s", $val, $key, $i));
+        });
+        $this->assertSame([
+            0 => '1-0-0',
+            1 => '2-1-1',
+            2 => '3-2-2',
+            3 => '4-3-3',
+            4 => '5-4-4'
+        ], $new->toArray());
+    }
+
     public function testMergeMergesArrayIntoNewCollection()
     {
         $arr1 = $this->getFixture('numwords');

@@ -775,6 +775,21 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
+     * Create a new collection by looping over this one
+     *
+     * Behaves in much the same way as fold, except that the accumulator is automatically a new collection which is
+     * ultimately returned.
+     *
+     * @param callable $callback The callback used to create the new collection
+     *
+     * @return Collection
+     */
+    public function recollect(callable $callback)
+    {
+        return $this->fold($callback, static::factory());
+    }
+
+    /**
      * Return a merge of this collection and $items
      *
      * Returns a new collection with a merge of this collection and $items. Values from $items will overwrite values in
