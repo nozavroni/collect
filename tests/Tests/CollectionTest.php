@@ -1033,56 +1033,56 @@ class CollectionTest extends TestCase
         ], $col->rekey($arr2)->toArray());
     }
 
-//    public function testReindexUsesCollectionForKeysAndIncomingCollectionForValues()
-//    {
-//        $arr = $this->getFixture('array');
-//        $col = new Collection($arr);
-//
-//        $arr2 = ['it', 'wasn\'t', 'me'];
-//        $col2 = new Collection($arr2);
-//
-//        $this->assertSame([
-//            'first' => 'it',
-//            'second' => 'wasn\'t',
-//            'third' => 'me'
-//        ], $col->combine($col2)->toArray());
-//    }
-//
-//    public function testReindexUsesCollectionForKeysAndIncomingTraversableForValues()
-//    {
-//        $arr = $this->getFixture('array');
-//        $col = new Collection($arr);
-//
-//        $arr2 = ['it', 'wasn\'t', 'me'];
-//        $iter = new ArrayIterator($arr2);
-//
-//        $this->assertSame([
-//            'first' => 'it',
-//            'second' => 'wasn\'t',
-//            'third' => 'me'
-//        ], $col->combine($iter)->toArray());
-//    }
-//
-//    /**
-//     * @expectedException RuntimeException
-//     */
-//    public function testReindexThrowsExceptionIfPassedInvalidInput()
-//    {
-//        $arr = $this->getFixture('array');
-//        $col = new Collection($arr);
-//        $col->combine('foo');
-//    }
-//
-//    /**
-//     * @expectedException RuntimeException
-//     */
-//    public function testReindexThrowsExceptionIfPassedItemsWithDifferentNumItems()
-//    {
-//        $arr = $this->getFixture('array');
-//        $arr2 = $this->getFixture('0index');
-//        $col = new Collection($arr);
-//        $col->combine($arr2);
-//    }
+    public function testRekeyUsesCollectionForValuesAndIncomingCollectionForKeys()
+    {
+        $arr = $this->getFixture('array');
+        $col = new Collection($arr);
+
+        $arr2 = ['it', 'wasn\'t', 'me'];
+        $col2 = new Collection($arr2);
+
+        $this->assertSame([
+            'it' => 'first',
+            'wasn\'t' => 'second',
+            'me' => 'third'
+        ], $col->rekey($col2)->toArray());
+    }
+
+    public function testRekeyUsesCollectionForValuesAndIncomingTraversableForKeys()
+    {
+        $arr = $this->getFixture('array');
+        $col = new Collection($arr);
+
+        $arr2 = ['it', 'wasn\'t', 'me'];
+        $iter = new ArrayIterator($arr2);
+
+        $this->assertSame([
+            'it' => 'first',
+            'wasn\'t' => 'second',
+            'me' => 'third'
+        ], $col->rekey($iter)->toArray());
+    }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testRekeyThrowsExceptionIfPassedInvalidInput()
+    {
+        $arr = $this->getFixture('array');
+        $col = new Collection($arr);
+        $col->rekey('foo');
+    }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testRekeyThrowsExceptionIfPassedItemsWithDifferentNumItems()
+    {
+        $arr = $this->getFixture('array');
+        $arr2 = $this->getFixture('0index');
+        $col = new Collection($arr);
+        $col->rekey($arr2);
+    }
 
     public function testEachCallsCallbackOnEachItemPassively()
     {
