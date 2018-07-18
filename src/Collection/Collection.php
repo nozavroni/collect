@@ -424,7 +424,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      */
     public function reverse()
     {
-        return static::factory(array_reverse($this->items));
+        return static::factory(array_reverse($this->items, true));
     }
 
     /**
@@ -450,7 +450,14 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      */
     public function shuffle()
     {
-        shuffle($this->items);
+        $new = [];
+        $keys = array_keys($this->items);
+        shuffle($keys);
+        foreach ($keys as $key) {
+            $new[$key] = $this->items[$key];
+        }
+        $this->items = $new;
+
         return $this;
     }
 
@@ -626,6 +633,29 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
+     * Create new collection with specified keys
+     *
+     * A new collection is created using this collection's values and the provided $keys (the opposite of combine)
+     *
+     * @param array|Traversable $keys A new set of keys
+     *
+     * @return Collection
+     */
+    public function rekey($keys)
+    {
+        if (!is_traversable($keys)) {
+            throw new RuntimeException("Invalid input type for " . __METHOD__ . ", must be array or Traversable");
+        }
+
+        $keys = to_array($keys);
+        if (count($keys) != count($this->items)) {
+            throw new RuntimeException("Invalid input for " . __METHOD__ . ", number of items does not match");
+        }
+
+        return static::factory(array_combine($keys, $this->items));
+    }
+
+    /**
      * Get a new collection with only distinct values
      *
      * @return Collection
@@ -727,6 +757,36 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
         }
 
         return $folded;
+    }
+
+    /**
+     * Fold collection into a single value (in opposite direction of fold)
+     *
+     * Folds/reduces a collection in the same way as fold(), except that it starts from the end and works backwards.
+     *
+     * @param callable $callback The callback function used to "fold" or "reduce" the collection into a single value
+     * @param mixed $initial The (optional) initial value to pass to the callback
+     *
+     * @return mixed
+     */
+    public function foldr(callable $callback, $initial = null)
+    {
+        return $this->reverse()->fold($callback, $initial);
+    }
+
+    /**
+     * Create a new collection by looping over this one
+     *
+     * Behaves in much the same way as fold, except that the accumulator is automatically a new collection which is
+     * ultimately returned.
+     *
+     * @param callable $callback The callback used to create the new collection
+     *
+     * @return Collection
+     */
+    public function recollect(callable $callback)
+    {
+        return $this->fold($callback, static::factory());
     }
 
     /**

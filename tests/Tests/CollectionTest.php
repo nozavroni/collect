@@ -130,6 +130,27 @@ class CollectionTest extends TestCase
         $this->assertEquals('third', $col->getValueAt(-1));
     }
 
+    public function testReverseReturnsNewCollectionWithValuesReversedAndKeysPreserved()
+    {
+        $arr1 = ['a' => 'A', 'b' => 'B', 'c' => 'C'];
+        $arr2 = ['a','b','c'];
+
+        $col1 = new Collection($arr1);
+        $col2 = new Collection($arr2);
+
+        $this->assertSame([
+            'c' => 'C',
+            'b' => 'B',
+            'a' => 'A'
+        ], $col1->reverse()->toArray());
+
+        $this->assertSame([
+            2 => 'c',
+            1 => 'b',
+            0 => 'a'
+        ], $col2->reverse()->toArray());
+    }
+
     public function testFlipReturnsNewCollectionWithKeysAndValuesFlipped()
     {
         $arr = $this->getFixture('assoc');
@@ -148,6 +169,18 @@ class CollectionTest extends TestCase
         $col = new Collection($arr);
 
         $this->assertSame($col, $col->shuffle());
+    }
+
+    public function testShufflePreservesKeys()
+    {
+        $arr = $this->getFixture('assoc');
+        $col = new Collection ($arr);
+
+        $keys = $col->keys()->toArray();
+        $shuffled = $col->shuffle()->toArray();
+        foreach ($keys as $k) {
+            $this->assertArrayHasKey($k, $shuffled);
+        }
     }
 
     /**
@@ -307,6 +340,40 @@ class CollectionTest extends TestCase
         $this->assertEquals('[[[[[[[init-zero-0-0]-one-1-1]-2-two-2]-three-3-3]-4-four-4]-5-five-5]-four-4-6]', $col->fold(function ($accum, $val, $key, $i) {
             return "[{$accum}-{$val}-{$key}-{$i}]";
         }, 'init'), 'Initial value passed in should be the first value of $accum');
+    }
+
+    public function testFoldrReturnsOneValue()
+    {
+        $arr = ['a','b','c'];
+        $col = new Collection($arr);
+
+        $this->assertEquals('cba', $col->foldr(function ($accum, $val, $key, $i) {
+            if (is_null($accum)) {
+                $accum = '';
+            }
+            $accum .= $val;
+            return $accum;
+        }));
+
+        $this->assertEquals('[[[init-c-2-0]-b-1-1]-a-0-2]', $col->foldr(function ($accum, $val, $key, $i) {
+            return "[{$accum}-{$val}-{$key}-{$i}]";
+        }, 'init'), 'Initial value passed in should be the first value of $accum');
+    }
+
+    public function testRecollectWorksLikeFoldButAlwaysReturnsANewCollection()
+    {
+        $col = new Collection(range(1,5));
+
+        $new = $col->recollect(function(Collection $accum, $val, $key, $i) {
+            return $accum->add(sprintf("%s-%s-%s", $val, $key, $i));
+        });
+        $this->assertSame([
+            0 => '1-0-0',
+            1 => '2-1-1',
+            2 => '3-2-2',
+            3 => '4-3-3',
+            4 => '5-4-4'
+        ], $new->toArray());
     }
 
     public function testMergeMergesArrayIntoNewCollection()
@@ -998,6 +1065,92 @@ class CollectionTest extends TestCase
         ], $col->combine($iter)->toArray());
     }
 
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testCombineThrowsExceptionIfPassedInvalidInput()
+    {
+        $arr = $this->getFixture('array');
+        $col = new Collection($arr);
+        $col->combine('foo');
+    }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testCombineThrowsExceptionIfPassedItemsWithDifferentNumItems()
+    {
+        $arr = $this->getFixture('array');
+        $arr2 = $this->getFixture('0index');
+        $col = new Collection($arr);
+        $col->combine($arr2);
+    }
+
+    public function testRekeyUsesCollectionForValuesAndIncomingItemsForKeys()
+    {
+        $arr = $this->getFixture('array');
+        $col = new Collection($arr);
+
+        $arr2 = ['it', 'wasn\'t', 'me'];
+
+        $this->assertSame([
+            'it' => 'first',
+            'wasn\'t' => 'second',
+            'me' => 'third'
+        ], $col->rekey($arr2)->toArray());
+    }
+
+    public function testRekeyUsesCollectionForValuesAndIncomingCollectionForKeys()
+    {
+        $arr = $this->getFixture('array');
+        $col = new Collection($arr);
+
+        $arr2 = ['it', 'wasn\'t', 'me'];
+        $col2 = new Collection($arr2);
+
+        $this->assertSame([
+            'it' => 'first',
+            'wasn\'t' => 'second',
+            'me' => 'third'
+        ], $col->rekey($col2)->toArray());
+    }
+
+    public function testRekeyUsesCollectionForValuesAndIncomingTraversableForKeys()
+    {
+        $arr = $this->getFixture('array');
+        $col = new Collection($arr);
+
+        $arr2 = ['it', 'wasn\'t', 'me'];
+        $iter = new ArrayIterator($arr2);
+
+        $this->assertSame([
+            'it' => 'first',
+            'wasn\'t' => 'second',
+            'me' => 'third'
+        ], $col->rekey($iter)->toArray());
+    }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testRekeyThrowsExceptionIfPassedInvalidInput()
+    {
+        $arr = $this->getFixture('array');
+        $col = new Collection($arr);
+        $col->rekey('foo');
+    }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testRekeyThrowsExceptionIfPassedItemsWithDifferentNumItems()
+    {
+        $arr = $this->getFixture('array');
+        $arr2 = $this->getFixture('0index');
+        $col = new Collection($arr);
+        $col->rekey($arr2);
+    }
+
     public function testEachCallsCallbackOnEachItemPassively()
     {
         $arr = $this->getFixture('assoc');
@@ -1041,27 +1194,6 @@ class CollectionTest extends TestCase
         $this->assertFalse($col->assert(function($val, $key, $index) { return true; }, false), "Assert should default to true");
         $this->assertFalse($col->assert(function($val, $key, $index) { return $val; }, ''), "If callback doesn't return the assert value, assert should return false");
         $this->assertTrue($col->assert(function($val, $key, $index) { return strlen($val) == 10; }, false));
-    }
-
-    /**
-     * @expectedException RuntimeException
-     */
-    public function testCombineThrowsExceptionIfPassedInvalidInput()
-    {
-        $arr = $this->getFixture('array');
-        $col = new Collection($arr);
-        $col->combine('foo');
-    }
-
-    /**
-     * @expectedException RuntimeException
-     */
-    public function testCombineThrowsExceptionIfPassedItemsWithDifferentNumItems()
-    {
-        $arr = $this->getFixture('array');
-        $arr2 = $this->getFixture('0index');
-        $col = new Collection($arr);
-        $col->combine($arr2);
     }
 
     public function testPipePassesCollectionThroughCallback()
