@@ -998,6 +998,92 @@ class CollectionTest extends TestCase
         ], $col->combine($iter)->toArray());
     }
 
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testCombineThrowsExceptionIfPassedInvalidInput()
+    {
+        $arr = $this->getFixture('array');
+        $col = new Collection($arr);
+        $col->combine('foo');
+    }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testCombineThrowsExceptionIfPassedItemsWithDifferentNumItems()
+    {
+        $arr = $this->getFixture('array');
+        $arr2 = $this->getFixture('0index');
+        $col = new Collection($arr);
+        $col->combine($arr2);
+    }
+
+    public function testRekeyUsesCollectionForValuesAndIncomingItemsForKeys()
+    {
+        $arr = $this->getFixture('array');
+        $col = new Collection($arr);
+
+        $arr2 = ['it', 'wasn\'t', 'me'];
+
+        $this->assertSame([
+            'it' => 'first',
+            'wasn\'t' => 'second',
+            'me' => 'third'
+        ], $col->rekey($arr2)->toArray());
+    }
+
+//    public function testReindexUsesCollectionForKeysAndIncomingCollectionForValues()
+//    {
+//        $arr = $this->getFixture('array');
+//        $col = new Collection($arr);
+//
+//        $arr2 = ['it', 'wasn\'t', 'me'];
+//        $col2 = new Collection($arr2);
+//
+//        $this->assertSame([
+//            'first' => 'it',
+//            'second' => 'wasn\'t',
+//            'third' => 'me'
+//        ], $col->combine($col2)->toArray());
+//    }
+//
+//    public function testReindexUsesCollectionForKeysAndIncomingTraversableForValues()
+//    {
+//        $arr = $this->getFixture('array');
+//        $col = new Collection($arr);
+//
+//        $arr2 = ['it', 'wasn\'t', 'me'];
+//        $iter = new ArrayIterator($arr2);
+//
+//        $this->assertSame([
+//            'first' => 'it',
+//            'second' => 'wasn\'t',
+//            'third' => 'me'
+//        ], $col->combine($iter)->toArray());
+//    }
+//
+//    /**
+//     * @expectedException RuntimeException
+//     */
+//    public function testReindexThrowsExceptionIfPassedInvalidInput()
+//    {
+//        $arr = $this->getFixture('array');
+//        $col = new Collection($arr);
+//        $col->combine('foo');
+//    }
+//
+//    /**
+//     * @expectedException RuntimeException
+//     */
+//    public function testReindexThrowsExceptionIfPassedItemsWithDifferentNumItems()
+//    {
+//        $arr = $this->getFixture('array');
+//        $arr2 = $this->getFixture('0index');
+//        $col = new Collection($arr);
+//        $col->combine($arr2);
+//    }
+
     public function testEachCallsCallbackOnEachItemPassively()
     {
         $arr = $this->getFixture('assoc');
@@ -1041,27 +1127,6 @@ class CollectionTest extends TestCase
         $this->assertFalse($col->assert(function($val, $key, $index) { return true; }, false), "Assert should default to true");
         $this->assertFalse($col->assert(function($val, $key, $index) { return $val; }, ''), "If callback doesn't return the assert value, assert should return false");
         $this->assertTrue($col->assert(function($val, $key, $index) { return strlen($val) == 10; }, false));
-    }
-
-    /**
-     * @expectedException RuntimeException
-     */
-    public function testCombineThrowsExceptionIfPassedInvalidInput()
-    {
-        $arr = $this->getFixture('array');
-        $col = new Collection($arr);
-        $col->combine('foo');
-    }
-
-    /**
-     * @expectedException RuntimeException
-     */
-    public function testCombineThrowsExceptionIfPassedItemsWithDifferentNumItems()
-    {
-        $arr = $this->getFixture('array');
-        $arr2 = $this->getFixture('0index');
-        $col = new Collection($arr);
-        $col->combine($arr2);
     }
 
     public function testPipePassesCollectionThroughCallback()

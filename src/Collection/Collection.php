@@ -626,6 +626,29 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
+     * Create new collection with specified keys
+     *
+     * A new collection is created using this collection's values and the provided $keys (the opposite of combine)
+     *
+     * @param array|Traversable $keys A new set of keys
+     *
+     * @return Collection
+     */
+    public function rekey($keys)
+    {
+        if (!is_traversable($keys)) {
+            throw new RuntimeException("Invalid input type for " . __METHOD__ . ", must be array or Traversable");
+        }
+
+        $keys = to_array($keys);
+        if (count($keys) != count($this->items)) {
+            throw new RuntimeException("Invalid input for " . __METHOD__ . ", number of items does not match");
+        }
+
+        return static::factory(array_combine($keys, $this->items));
+    }
+
+    /**
      * Get a new collection with only distinct values
      *
      * @return Collection
