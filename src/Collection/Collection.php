@@ -424,7 +424,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      */
     public function reverse()
     {
-        return static::factory(array_reverse($this->items));
+        return static::factory(array_reverse($this->items, true));
     }
 
     /**
@@ -750,6 +750,21 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
         }
 
         return $folded;
+    }
+
+    /**
+     * Fold collection into a single value (in opposite direction of fold)
+     *
+     * Folds/reduces a collection in the same way as fold(), except that it starts from the end and works backwards.
+     *
+     * @param callable $callback The callback function used to "fold" or "reduce" the collection into a single value
+     * @param mixed $initial The (optional) initial value to pass to the callback
+     *
+     * @return mixed
+     */
+    public function foldr(callable $callback, $initial = null)
+    {
+        return $this->reverse()->fold($callback, $initial);
     }
 
     /**

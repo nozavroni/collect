@@ -130,6 +130,27 @@ class CollectionTest extends TestCase
         $this->assertEquals('third', $col->getValueAt(-1));
     }
 
+    public function testReverseReturnsNewCollectionWithValuesReversedAndKeysPreserved()
+    {
+        $arr1 = ['a' => 'A', 'b' => 'B', 'c' => 'C'];
+        $arr2 = ['a','b','c'];
+
+        $col1 = new Collection($arr1);
+        $col2 = new Collection($arr2);
+
+        $this->assertSame([
+            'c' => 'C',
+            'b' => 'B',
+            'a' => 'A'
+        ], $col1->reverse()->toArray());
+
+        $this->assertSame([
+            2 => 'c',
+            1 => 'b',
+            0 => 'a'
+        ], $col2->reverse()->toArray());
+    }
+
     public function testFlipReturnsNewCollectionWithKeysAndValuesFlipped()
     {
         $arr = $this->getFixture('assoc');
@@ -305,6 +326,24 @@ class CollectionTest extends TestCase
         }));
 
         $this->assertEquals('[[[[[[[init-zero-0-0]-one-1-1]-2-two-2]-three-3-3]-4-four-4]-5-five-5]-four-4-6]', $col->fold(function ($accum, $val, $key, $i) {
+            return "[{$accum}-{$val}-{$key}-{$i}]";
+        }, 'init'), 'Initial value passed in should be the first value of $accum');
+    }
+
+    public function testFoldrReturnsOneValue()
+    {
+        $arr = ['a','b','c'];
+        $col = new Collection($arr);
+
+        $this->assertEquals('cba', $col->foldr(function ($accum, $val, $key, $i) {
+            if (is_null($accum)) {
+                $accum = '';
+            }
+            $accum .= $val;
+            return $accum;
+        }));
+
+        $this->assertEquals('[[[init-c-2-0]-b-1-1]-a-0-2]', $col->foldr(function ($accum, $val, $key, $i) {
             return "[{$accum}-{$val}-{$key}-{$i}]";
         }, 'init'), 'Initial value passed in should be the first value of $accum');
     }
