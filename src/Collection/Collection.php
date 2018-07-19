@@ -77,7 +77,7 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      */
     public function toArray()
     {
-        return $this->items;
+        return iterator_to_array($this);
     }
 
     /**
