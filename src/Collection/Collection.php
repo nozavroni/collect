@@ -55,6 +55,16 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
+     * Getter for internal items array
+     *
+     * @return array
+     */
+    protected function getItems()
+    {
+        return $this->items;
+    }
+
+    /**
      * Generate a collection from any iterable
      *
      * This is the method used internally to generate new collections. This allows for this class to be extended if 
@@ -1244,13 +1254,21 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
      * consistently named keys). If the data is not structured this way, it will do the best it can but it is not meant
      * for unstructured, non-tabular data so don't expect consistent results.
      *
-     * @param string|int $column The key of the column you want to get
+     * @param string|int $key The key of the column you want to get
      *
      * @return Collection
      */
-    public function getColumn($column)
+    public function getColumn($key)
     {
-        return static::factory(array_column($this->items, $column));
+        if (!$this->isTabular()) {
+            throw new RuntimeException(sprintf("Cannot get column \"%s\" from this collection.", $key));
+        }
+        return $this->recollect(function(Collection $column, $row) use ($key) {
+            if (isset($row[$key])) {
+                $column->add($row[$key]);
+            }
+            return $column;
+        });
     }
 
     /**
