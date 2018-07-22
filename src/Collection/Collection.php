@@ -55,16 +55,6 @@ class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
     }
 
     /**
-     * Getter for internal items array
-     *
-     * @return array
-     */
-    protected function getItems()
-    {
-        return $this->items;
-    }
-
-    /**
      * Generate a collection from any iterable
      *
      * This is the method used internally to generate new collections. This allows for this class to be extended if 
