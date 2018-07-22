@@ -1886,9 +1886,12 @@ class CollectionTest extends TestCase
         $this->assertSame([49, 19, 82, 32, 31, 25, 32, 21, 44], $col->getColumn('age')->toArray());
     }
 
-    public function testGetColumnOnNonTabularDataDoesTheBestItCan()
+    /**
+     * @expectedException RuntimeException
+     * @expectedExceptionMessage Cannot get column "foo" from this collection.
+     */
+    public function testGetColumnOnNonTabularDataThrowsException()
     {
-        $onedim = [1,2,3,4,5];
         $nontable = [
             'foo',
             1,
@@ -1900,11 +1903,8 @@ class CollectionTest extends TestCase
             'FOOBAR!',
             ['goo' => 'nar', 'boo' => 'har', 'foo' => 'dar', 'doo' => 'lar']
         ];
-        $c1d = new Collection($onedim);
         $col = new Collection($nontable);
-        $this->assertSame(['bar', 'gar', 'dar'], $col->getColumn('foo')->toArray());
-        $this->assertSame([2, 2], $col->getColumn(1)->toArray());
-        $this->assertSame([], $c1d->getColumn(1)->toArray());
+        $col->getColumn('foo');
     }
 
     public function testGetColumnWorksOnThreeDimensionalOrMore()
